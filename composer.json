@@ -10,7 +10,7 @@
     ],
     "require": {
         "php": ">=5.4",
-        "name": "thefold/wordpress-dispatcher":">=1.0"
+        "thefold/wordpress-dispatcher":">=1.0"
     },
     "autoload": {
         "psr-4": {
