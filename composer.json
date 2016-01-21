@@ -1,0 +1,20 @@
+{
+    "name": "thefold/graphql-wp",
+    "description": "A GraphQL endpoint for WordPress",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tim Field",
+            "email": "tim@thefold.co.nz"
+        }
+    ],
+    "require": {
+        "php": ">=5.4",
+        "name": "thefold/wordpress-dispatcher"
+    },
+    "autoload": {
+        "psr-4": {
+            "TheFold\\GraphQLWP\\":"/"
+        }
+    }
+}
