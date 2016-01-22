@@ -1,4 +1,4 @@
-# graphql-wp
+#graphql-wp
 A GraphQL endpoint for WordPress
 
 Exposes a graph ql endpoint at */graphql* 
@@ -46,7 +46,14 @@ Will give you
 
 Also available on wp_query menu 
 
-`{"query":"{ wp_query { menu(name: \"Main Menu\")  { title url} }}"}`
+    {"query":
+	    "{ wp_query 
+		    { menu(name: \"Main Menu\")  { 
+			    title 
+			    url
+			}
+		}
+	}"}
 
 Will give you
 
