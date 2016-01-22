@@ -1,4 +1,4 @@
-#graphql-wp
+# graphql-wp
 A GraphQL endpoint for WordPress
 
 Exposes a graph ql endpoint at */graphql* 
@@ -75,3 +75,71 @@ Will give you
 And of course you can get an individual post *( but most of the time you'll probably use wp_query as your main entry point )*
 
 `{"query":"{wp_post(ID:\"1\") { title, content, status }}"}`
+
+###Custom Post Types
+
+This is how I'm adding custom post types ( which have custom fields ) to my client specific plugin.  
+ **graphql-wp/get_post_types** is a good hook for this *( there are other hooks, check the source, I'll endeavour to document them soon  )* 
+
+Where `$types` a hash of the schema we are working with, so just add new items into this and you are good to go.
+
+    add_filter('graphql-wp/get_post_types', function($types, $WPSchema) {
+    
+        $types[self::TYPE] = [
+            'name' => 'Artist',
+            'description' => 'A custom post type example',
+            'fields' => [
+                'website' => [
+                    'type' => Type::string(),
+                    'resolve' => function($post) {
+                        return get_field('website',$post->ID);
+                    },
+                ],
+                'image' => [
+                    'type' => new ACFImage([
+                        'name'=>'image'
+                    ]),
+                    'resolve' => function($post) {
+                        return get_field('image',$post->ID);
+                    },
+                ],
+                'news' => [
+                    'type' => function() use ($WPSchema) {
+                        return new ListOfType($WPSchema->getType('post'));
+                    },
+                    'resolve' => function($post) {
+                        return get_posts([
+                            'connected_type' => self::CONNECTION_NEWS,
+                            'connected_items' => $post,
+                            'nopaging' => true,
+                            'suppress_filters' => false
+                        ]) ?: [];
+                    }
+                ],
+                'downloads' => [
+                    'type' => new ListOfType( new ObjectType([
+                        'name' => 'Downloads',
+                        'fields' => [
+                            'file' => [
+                                'type' => new ACFFile(['name'=>'File']),
+                                'resolve' => function($fieldset) {
+                                    return $fieldset['file'];
+                                }
+                            ]
+                        ]
+                    ])),
+                    'resolve' => function($post) {
+                        return get_field('downloads',$post->ID) ?: [];
+                    }
+                ])),
+                    'resolve' => function($post) {
+                        return static::getTourDates($post);
+                    }
+                ]
+            ]
+        ];
+        return $types;
+    }
+    
+    },10, 2);
+
