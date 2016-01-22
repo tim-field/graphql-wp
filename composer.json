@@ -11,7 +11,8 @@
     ],
     "require": {
         "php": ">=5.4",
-        "thefold/wordpress-dispatcher":">=1.0"
+        "thefold/wordpress-dispatcher":">=1.0",
+        "webonyx/graphql-php": "v0.5.5"
     },
     "autoload": {
         "psr-4": {
