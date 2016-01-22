@@ -1,9 +1,9 @@
 # graphql-wp
 A GraphQL endpoint for WordPress
 
-**Exposes a graph ql endpoint at */graphql*** 
+Exposes a graph ql endpoint at **/graphql**
 
-This is a work in progress, but already pretty useful, and easy enough to extend.
+This is a work in progress, but already pretty useful
 
 
 ##Install
