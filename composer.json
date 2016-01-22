@@ -1,7 +1,8 @@
 {
     "name": "thefold/graphql-wp",
     "description": "A GraphQL endpoint for WordPress",
-    "license": "MIT",
+    "type" : "wordpress-plugin",
+    "license": "GPL",
     "authors": [
         {
             "name": "Tim Field",
