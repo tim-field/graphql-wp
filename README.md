@@ -84,7 +84,7 @@ And of course you can get an individual post *( but most of the time you'll prob
 This is how I'm adding custom post types ( which have custom fields ) to my client specific plugin.  
  **graphql-wp/get_post_types** is a good hook for this *( there are other hooks, check the source, I'll endeavour to document them soon  )* 
 
-Where `$types` a hash of the schema we are working with, so just add new items into this and you are good to go.
+Where `$types` is a hash of the schema we are working with, so just add new items into this and you are good to go.
 
     add_filter('graphql-wp/get_post_types', function($types, $WPSchema) {
     
