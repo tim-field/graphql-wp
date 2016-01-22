@@ -301,6 +301,10 @@ class Schema
                             'description' => 'number of post to show per page',
                             'type' => Type::int(),
                         ],
+                        'paged' => [
+                            'description' => 'number of page.',
+                            'type' => Type::int(),
+                        ],
                         'post_type' => [
                             'description' => "Retrieves posts by Post Types, default value is 'post'.",
                             'type' => new ListOfType(Type::string()),
