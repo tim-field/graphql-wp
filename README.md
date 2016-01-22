@@ -1,2 +1,5 @@
 # graphql-wp
-GraphQL endpoint for WordPress
+A GraphQL endpoint for WordPress
+
+##Install##
+`composer require thefold/graphql-wp`
