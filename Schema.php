@@ -350,7 +350,7 @@ class Schema
                     'type' => new ListOfType( new MenuItem(['name'=>'MenuItem']) ),
                     'args' => [
                         'name' => [
-                            'type' => Type::string(),
+                            'type' => Type::nonNull(Type::string()),
                             'description' => "Menu 'id','name' or 'slug'"
                         ]
                     ],
