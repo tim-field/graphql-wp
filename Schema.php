@@ -31,10 +31,12 @@ class Schema
             'post'=> [
                 'name' => 'Post',
                 'description' => 'A standard WordPress post.',
+                'fields' => [] // Will be provided from postInterfaceSchema
             ],
             'page'=> [
                 'name' => 'Page',
                 'description' => 'A standard WordPress page.',
+                'fields' => [] // Will be provided from postInterfaceSchema
             ]
         ],$this);
     }
