@@ -102,7 +102,9 @@ class Schema
                     'type' => Type::string(),
                     'description' => 'User-defined post except',
                     'resolve' => function($post) {
-                        return apply_filters('the_content', get_post_field('post_excerpt', $post));
+
+                        return apply_filters('the_excerpt', 
+                            get_post_field('post_excerpt', $post) ?: wp_trim_words( strip_shortcodes( $post->post_content )));
                     }
                 ],
                 'date' => [
