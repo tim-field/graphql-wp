@@ -165,6 +165,13 @@ class Schema
                         return $post->menu_order;
                     }
                 ],
+                'permalink' => [
+                        'description' => "Retrieve full permalink for current post ",
+                        'type' => Type::string(),
+                        'resolve' => function($post) {
+                            return get_permalink($post);
+                        }
+                ],
                 'terms' => [
                     'type' => new ListOfType($this->getTerm()),
                     'description' => 'Terms ( Categories, Tags etc ) or this post',
