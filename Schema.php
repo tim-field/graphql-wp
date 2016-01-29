@@ -23,7 +23,7 @@ class Schema
     function __construct() {
         foreach($this->getPostTypes() as $type => $schema) {
             $this->addPostType($type, $schema);
-        } 
+        }
     }
 
     function getPostTypes(){
