@@ -380,6 +380,12 @@ class Schema
                         return wp_get_nav_menu_items($args['name']);
                     }
                 ],
+		'bloginfo' => [
+		    'type' => $this->getBlogInfo(),
+		    'resolve' => function($root, $args){
+			return isset($args['filter']) ? $args['filter'] : 'raw'; 
+		    }
+		],
                 'home_page' => [
                     'type' => $this->getPostInterface(),
                     'resolve' => function(){
@@ -490,6 +496,34 @@ class Schema
                 ]
             ]
         ];
+    }
+
+    function getBlogInfo() {
+	return $this->blogInfo ?: $this->blogInfo = new ObjectType($this->getBlogInfoSchema());
+    }
+
+    function getBlogInfoSchema() {
+
+	$type = ['type' => Type::string(), 'resolve' => function($filter, $args, $resolveInfo) {
+	    return get_bloginfo($resolveInfo->fieldName, isset($args['filter']) ?: $filter ); 
+	}];
+
+	return [
+	    'name' => 'BlogInfo',
+	    'description' => 'blog info stuff',
+	    'fields' => [
+		'url' => $type,
+		'wpurl' => $type,
+		'description' => $type,
+		'rdf_url' => $type,
+		'rss_url' => $type,
+		'atom_url' => $type,
+		'comments_atom_url' => $type,
+		'comments_rss2_url' => $type,
+		'admin_email' => $type,
+		'blogname' => $type,
+	    ]
+	];
     }
 
     function getQueryArgsPost() {
