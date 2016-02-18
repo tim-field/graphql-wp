@@ -209,7 +209,7 @@ class Schema
                         ];
                         extract($args);
 
-                        $res = wp_get_post_terms($post->ID, $taxonomy, ['orderby'=>$orderby,'order'=>$asc]); 
+                        $res = wp_get_post_terms($post->ID, $taxonomy, ['orderby'=>$orderby,'order'=>$order]); 
 
                         return is_wp_error($res) ? [] : $res;
                     }
