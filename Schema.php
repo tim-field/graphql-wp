@@ -388,7 +388,7 @@ class Schema
                         ]
                     ],
                     'resolve' => function($root, $args) {
-                        return wp_get_nav_menu_items($args['name']);
+                        return wp_get_nav_menu_items($args['name']) ?: [];
                     }
                 ],
 		'bloginfo' => [
