@@ -121,15 +121,21 @@ class Schema
                 'date' => [
                     'type' => Type::string(),
                     'description' => 'Format: 0000-00-00 00:00:00',
-                    'resolve' => function($post) {
-                        return $post->post_date;
+		    'args' => [
+			'format' => ['type' => Type::string()]
+		    ],
+                    'resolve' => function($post, $args) {
+			return !empty($args['format']) ? date($args['format'],strtotime($post->post_date)) : $post->post_date;
                     }
                 ],
                 'date_gmt' => [
                     'type' => Type::string(),
                     'description' => 'Format: 0000-00-00 00:00:00',
-                    'resolve' => function($post) {
-                        return $post->post_date_gmt;
+		    'args' => [
+			'format' => ['type' => Type::string()]
+		    ],
+                    'resolve' => function($post, $args) {
+			return !empty($args['format']) ? date($args['format'],strtotime($post->post_date_gmt)) : $post->post_date_gmt;
                     }
                 ],
                 'status' => [
@@ -150,16 +156,22 @@ class Schema
                 ],
                 'modified' => [
                     'type' => Type::string(),
-                    'description' => 'Format: 0000-00-00 00:00:00',
-                    'resolve' => function($post) {
-                        return $post->post_modified;
+		    'description' => 'Format: 0000-00-00 00:00:00',
+		    'args' => [
+			'format' => ['type' => Type::string()]
+		    ],
+                    'resolve' => function($post, $args) {
+			return !empty($args['format']) ? date($args['format'],strtotime($post->post_modified)) : $post->post_modified;
                     }
                 ],
                 'modified_gmt' => [
                     'type' => Type::string(),
                     'description' => 'Format: 0000-00-00 00:00:00',
-                    'resolve' => function($post) {
-                        return $post->post_modified_gmt;
+		    'args' => [
+			'format' => ['type' => Type::string()]
+		    ],
+                    'resolve' => function($post, $args) {
+			return !empty($args['format']) ? date($args['format'],strtotime($post->post_modified_gmt)) : $post->post_modified_gmt;
                     }
                 ],
                 'comment_count' => [
@@ -171,7 +183,6 @@ class Schema
                 ],
                 'menu_order' => [
                     'type' => Type::int(),
-                    'description' => 'Which movies they appear in.',
                     'resolve' => function($post) {
                         return $post->menu_order;
                     }
