@@ -318,6 +318,7 @@ class Schema
                     'type' => function() {
                         return new ListOfType($this->getTerm());
                     },
+                    'description' => 'retrieves children of the term',
                     'resolve' => function($term) {
                         return array_map(function($id) use ($term) {
                             return get_term($id,$term->taxonomy);
