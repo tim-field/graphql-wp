@@ -1,7 +1,7 @@
 # graphql-wp
 A GraphQL endpoint for WordPress
 
-This is a WordPress Plugin that exposes a graph ql endpoint at **/graphql**
+This is a WordPress Plugin that exposes a GraphQL endpoint at **/graphql**
 
 This is a work in progress / in active development, but already pretty useful.
 
