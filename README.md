@@ -1,14 +1,25 @@
 # graphql-wp
 A GraphQL endpoint for WordPress
 
-Exposes a graph ql endpoint at **/graphql**
+This is a WordPress Plugin that exposes a graph ql endpoint at **/graphql**
 
-This is a work in progress / in active development, but already pretty useful.  Read only access currently.
+This is a work in progress / in active development, but already pretty useful.
 
 Uses this excellent [graphql-php](https://github.com/webonyx/graphql-php) library.
 
 ##Install
 `composer require thefold/graphql-wp`
+
+Assuming you have something like this in your composer.json file ( so it knows to install it in your plugin directory )
+
+    "extra" : {
+        "wordpress-install-dir": "public/wp",
+        "installer-paths": {
+            "public/wp-content/plugins/{$name}/": ["type:wordpress-plugin"],
+            "public/wp-content/themes/{$name}/": ["type:wordpress-theme"]
+        }
+    },
+
 
 ##Using
 
