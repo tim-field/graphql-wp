@@ -313,7 +313,17 @@ class Schema
                     'type' => function(){
                         return $this->getTerm();
                     }
-                ]
+                ],
+                'children' => [
+                    'type' => function() {
+                        return new ListOfType($this->getTerm());
+                    },
+                    'resolve' => function($term) {
+                        return array_map(function($id) use ($term) {
+                            return get_term($id,$term->taxonomy);
+                        }, get_term_children($term->term_id,$term->taxonomy));
+                    }
+		]
             ]
         ], $this);
     }
