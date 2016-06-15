@@ -12,7 +12,9 @@
     "require": {
         "php": ">=5.4",
         "thefold/wordpress-dispatcher":">=1.0",
-        "webonyx/graphql-php": "v0.5.5"
+        "webonyx/graphql-php": "^v0.6",
+        "ivome/graphql-relay-php": "^0.1.2",
+        "analog/analog": "^1.0"
     },
     "autoload": {
         "psr-4": {
