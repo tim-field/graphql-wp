@@ -31,27 +31,32 @@ new \TheFold\WordPress\Dispatch([
             $data = $_POST;
         }
 
+        //\Analog::log(print_r($data,true),\Analog::DEBUG);
+
         $requestString = isset($data['query']) ? $data['query'] : null;
         $operationName = isset($data['operation']) ? $data['operation'] : null;
-        $variableValues = !empty($data['variables']) ? json_decode($data['variables'],true) : null;
+        $variableValues = !empty($data['variables']) ? $data['variables'] : null;
 
-        //try {
-            // Define your schema:
-            $schema = Schema::build();
-            $result = GraphQL::execute(
-                $schema,
-                $requestString,
-                /* $rootValue */ null,
-                $variableValues,
-                $operationName
-            );
-        /*} catch (Exception $exception) {
-            $result = [
-                'errors' => [
-                    ['message' => $exception->getMessage()]
-                ]
-            ];
-        }*/
-        echo json_encode($result);
+        if($requestString) {
+            try {
+                // Define your schema:
+                $schema = Schema::build();
+                $result = GraphQL::execute(
+                    $schema,
+                    $requestString,
+                    /* $rootValue */ null,
+                    $variableValues,
+                    $operationName
+                );
+            } catch (Exception $exception) {
+                $result = [
+                    'errors' => [
+                        ['message' => $exception->getMessage()]
+                    ]
+                ];
+            }
+            echo json_encode($result);
+        }
+
     }
 ]);
