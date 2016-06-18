@@ -1,6 +1,6 @@
 <?php
 
-namespace TheFold\GraphQLWP\Type\Definition;
+namespace Mohiohio\GraphQLWP\Type\Definition;
 
 use \GraphQL\Type\Definition\ObjectType;
 use \GraphQL\Type\Definition\Type;
@@ -13,7 +13,7 @@ class MenuItem extends ObjectType {
     }
 
     function getConfig($config) {
-        
+
         return array_replace_recursive([
             'description' => 'Items in a navigation menu',
             'fields' => [

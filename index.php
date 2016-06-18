@@ -1,23 +1,20 @@
 <?php
 /**
 * Plugin Name: WordPress GraphQL
-* Plugin URI: http://www.thefold.co.nz/
+* Plugin URI: http://www.mohiohio.com/
 * Description: GraphQL for WordPress
-* Version: 0.0.2
-* Author: The Fold
-* Author URI: http://www.thefold.co.nz/
+* Version: 0.1.1
+* Author: Tim Field
+* Author URI: http://www.mohiohio.com/
 * License: BSD
 */
-namespace TheFold\GraphQLWP;
-
-require __DIR__.'/autoload.php';
+namespace Mohiohio\GraphQLWP;
 
 use \GraphQL\GraphQL;
-use \Exception;
 
 const ENDPOINT = '/graphql/';
 
-new \TheFold\WordPress\Dispatch([
+\Mohiohio\WordPress\Router::routes([
 
     ENDPOINT => function() {
 
@@ -48,7 +45,7 @@ new \TheFold\WordPress\Dispatch([
                     $variableValues,
                     $operationName
                 );
-            } catch (Exception $exception) {
+            } catch (\Exception $exception) {
                 $result = [
                     'errors' => [
                         ['message' => $exception->getMessage()]

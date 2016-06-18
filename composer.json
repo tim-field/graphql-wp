@@ -1,24 +1,26 @@
 {
-    "name": "thefold/graphql-wp",
+    "name": "mohiohio/graphql-wp",
     "description": "A GraphQL endpoint for WordPress",
     "type" : "wordpress-plugin",
     "license": "GPL",
     "authors": [
         {
             "name": "Tim Field",
-            "email": "tim@thefold.co.nz"
+            "email": "field.tim@gmail.com"
         }
     ],
     "require": {
-        "php": ">=5.4",
-        "thefold/wordpress-dispatcher":">=1.0",
+        "php": ">=5.5",
+        "mohiohio/wordpress-lib":"^0.1",
         "webonyx/graphql-php": "^v0.6",
-        "ivome/graphql-relay-php": "^0.1.2",
-        "analog/analog": "^1.0"
+        "ivome/graphql-relay-php": "^0.1.2"
     },
     "autoload": {
         "psr-4": {
-            "TheFold\\GraphQLWP\\":"/"
+            "Mohiohio\\GraphQLWP\\":"/"
         }
+    },
+    "require-dev": {
+        "analog/analog": "^1.0"
     }
 }

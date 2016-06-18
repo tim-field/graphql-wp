@@ -1,5 +1,5 @@
 <?php
-namespace TheFold\GraphQLWP;
+namespace Mohiohio\GraphQLWP;
 
 use \GraphQL\Type\Definition\InterfaceType;
 use \GraphQL\Type\Definition\ObjectType;
@@ -9,7 +9,7 @@ use \GraphQL\Type\Definition\ListOfType;
 use \GraphQL\Type\Definition\EnumType;
 use \GraphQLRelay\Relay;
 
-use \TheFold\GraphQLWP\Type\Definition\MenuItem;
+use \Mohiohio\GraphQLWP\Type\Definition\MenuItem;
 
 class Schema
 {

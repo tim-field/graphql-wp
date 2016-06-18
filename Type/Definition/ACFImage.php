@@ -1,13 +1,13 @@
 <?php
 
-namespace TheFold\GraphQLWP\Type\Definition;
+namespace Mohiohio\GraphQLWP\Type\Definition;
 
 use \GraphQL\Type\Definition\Type;
 
 class ACFImage extends ACFFile {
 
     function getConfig($config) {
-        
+
         return array_replace_recursive([
             'description' => 'An image from the ACF plugin',
 
@@ -30,12 +30,12 @@ class ACFImage extends ACFFile {
                         $args += [
                             'size' => 'medium'
                         ];
-                        $size = $args['size']; 
-                       
+                        $size = $args['size'];
+
                         if($size == 'full'){
                             return $field['url'];
                         }
-                        
+
                         return $field['sizes'][$size];
                     }
                 ],
@@ -52,7 +52,7 @@ class ACFImage extends ACFFile {
                         $args += [
                             'size' => 'medium'
                         ];
-                        $size = $args['size']; 
+                        $size = $args['size'];
 
                         return $field['sizes'][$size.'-width'];
                     }
@@ -71,7 +71,7 @@ class ACFImage extends ACFFile {
                             'size' => 'medium'
                         ];
 
-                        $size = $args['size']; 
+                        $size = $args['size'];
 
                         return $field['sizes'][$size.'-height'];
                     }
