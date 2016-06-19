@@ -123,7 +123,7 @@ Where `$types` is a hash of the schema we are working with, so just add new item
                 ],
                 'news' => [
                     'type' => function() {
-                        return new ListOfType(Schema::getType('post'));
+                        return new ListOfType(Schema::getPostType());
                     },
                     'resolve' => function($post) {
                         return get_posts([
