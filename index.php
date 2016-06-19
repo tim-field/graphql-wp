@@ -3,18 +3,21 @@
 * Plugin Name: WordPress GraphQL
 * Plugin URI: http://www.mohiohio.com/
 * Description: GraphQL for WordPress
-* Version: 0.1.1
+* Version: 0.1.2
 * Author: Tim Field
-* Author URI: http://www.mohiohio.com/
+* Author URI: http://www.github.com/tim-field
 * License: BSD
 */
 namespace Mohiohio\GraphQLWP;
 
+require __DIR__.'/autoload.php';
+
 use \GraphQL\GraphQL;
+use \Mohiohio\WordPress\Router;
 
 const ENDPOINT = '/graphql/';
 
-\Mohiohio\WordPress\Router::routes([
+Router::routes([
 
     ENDPOINT => function() {
 
@@ -24,15 +27,22 @@ const ENDPOINT = '/graphql/';
         if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] === 'application/json') {
             $rawBody = file_get_contents('php://input');
             $data = json_decode($rawBody ?: '', true);
+            //\Analog::log('raw with '.var_export($rawBody,true),\Analog::DEBUG);
         } else {
             $data = $_POST;
+            //\Analog::log('post ',\Analog::DEBUG);
         }
 
-        //\Analog::log(print_r($data,true),\Analog::DEBUG);
+        //\Analog::log(var_export($data,true),\Analog::DEBUG);
+
 
         $requestString = isset($data['query']) ? $data['query'] : null;
         $operationName = isset($data['operation']) ? $data['operation'] : null;
-        $variableValues = !empty($data['variables']) ? $data['variables'] : null;
+        $variableValues = isset($data['variables']) ?
+            ( is_array($data['variables']) ?
+                $data['variables'] :
+                json_decode($data['variables'],true) ) :
+            null;
 
         if($requestString) {
             try {
