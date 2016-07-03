@@ -43,8 +43,11 @@ Router::routes([
                 $data['variables'] :
                 json_decode($data['variables'],true) ) :
             null;
-
+        log('post', $_POST);
+        log('data', $data);
+            
         if($requestString) {
+            log("requestString", $requestString);
             try {
                 // Define your schema:
                 $schema = Schema::build();
@@ -64,6 +67,20 @@ Router::routes([
             }
             echo json_encode($result);
         }
-
+        echo json_encode(['error' => ['message' => 'wrong query format or emtpy query']]);
     }
 ]);
+
+function log($message)  {
+    $function_args = func_get_args();
+    // The first is a simple string message, the others should be var_exportetd
+    array_shift($function_args);
+
+    foreach($function_args as $argument) {
+        $message .= ' ' . var_export($argument, true);
+    }
+
+    // send to sapi
+    error_log($message, 4);
+
+}
