@@ -11,7 +11,7 @@ Uses this excellent [graphql-php](https://github.com/webonyx/graphql-php) librar
 `composer require mohiohio/graphql-wp`
 
 Assuming you have something like this in your composer.json file ( so it knows to install it in your plugin directory )
-
+```json
     "extra" : {
         "wordpress-install-dir": "public/wp",
         "installer-paths": {
@@ -19,6 +19,7 @@ Assuming you have something like this in your composer.json file ( so it knows t
             "public/wp-content/themes/{$name}/": ["type:wordpress-theme"]
         }
     },
+```
 
 
 ##Using
@@ -30,7 +31,8 @@ This is designed to follow WordPress' existing WP Query functions.  So as a rule
 
 **In reality there are a lot of params you can pass to WP_Query, and I've only implemented the ones that I've needed so far. But adding more is trivial as the arguments are just passed directly to the get_posts function, so its just a matter of defining them in the schema.* 
 
-    {"query":"{ 
+ ```json
+ {"query":"{ 
     	wp_query { 
     		posts(paged: 1 posts_per_page: 10)  { 
     			title 
@@ -42,6 +44,7 @@ This is designed to follow WordPress' existing WP Query functions.  So as a rule
     		}
     	}
     }"}
+```
 
 Will give you
 
@@ -99,6 +102,7 @@ This is how I'm adding custom post types ( which have custom fields ) to my clie
 
 Where `$types` is a hash of the schema we are working with, so just add new items into this and you are good to go.
 
+```php
     use \Mohiohio\GraphQLWP\Schema;
 
     add_filter('graphql-wp/get_post_types', function($types) {
@@ -160,4 +164,4 @@ Where `$types` is a hash of the schema we are working with, so just add new item
     }
     
     },10);
-
+```
