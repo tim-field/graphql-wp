@@ -103,65 +103,65 @@ This is how I'm adding custom post types ( which have custom fields ) to my clie
 Where `$types` is a hash of the schema we are working with, so just add new items into this and you are good to go.
 
 ```php
-    use \Mohiohio\GraphQLWP\Schema;
+use \Mohiohio\GraphQLWP\Schema;
 
-    add_filter('graphql-wp/get_post_types', function($types) {
-    
-        $types[self::TYPE] = [
-            'name' => 'Artist',
-            'description' => 'A custom post type example',
-            'fields' => [
-                'website' => [
-                    'type' => Type::string(),
-                    'resolve' => function($post) {
-                        return get_field('website',$post->ID);
-                    },
-                ],
-                'image' => [
-                    'type' => new ACFImage([
-                        'name'=>'image'
-                    ]),
-                    'resolve' => function($post) {
-                        return get_field('image',$post->ID);
-                    },
-                ],
-                'news' => [
-                    'type' => function() {
-                        return new ListOfType(Schema::getPostType());
-                    },
-                    'resolve' => function($post) {
-                        return get_posts([
-                            'connected_type' => self::CONNECTION_NEWS,
-                            'connected_items' => $post,
-                            'nopaging' => true,
-                            'suppress_filters' => false
-                        ]) ?: [];
-                    }
-                ],
-                'downloads' => [
-                    'type' => new ListOfType( new ObjectType([
-                        'name' => 'Downloads',
-                        'fields' => [
-                            'file' => [
-                                'type' => new ACFFile(['name'=>'File']),
-                                'resolve' => function($fieldset) {
-                                    return $fieldset['file'];
-                                }
-                            ]
+add_filter('graphql-wp/get_post_types', function($types) {
+
+    $types[self::TYPE] = [
+        'name' => 'Artist',
+        'description' => 'A custom post type example',
+        'fields' => [
+            'website' => [
+                'type' => Type::string(),
+                'resolve' => function($post) {
+                    return get_field('website',$post->ID);
+                },
+            ],
+            'image' => [
+                'type' => new ACFImage([
+                    'name'=>'image'
+                ]),
+                'resolve' => function($post) {
+                    return get_field('image',$post->ID);
+                },
+            ],
+            'news' => [
+                'type' => function() {
+                    return new ListOfType(Schema::getPostType());
+                },
+                'resolve' => function($post) {
+                    return get_posts([
+                        'connected_type' => self::CONNECTION_NEWS,
+                        'connected_items' => $post,
+                        'nopaging' => true,
+                        'suppress_filters' => false
+                    ]) ?: [];
+                }
+            ],
+            'downloads' => [
+                'type' => new ListOfType( new ObjectType([
+                    'name' => 'Downloads',
+                    'fields' => [
+                        'file' => [
+                            'type' => new ACFFile(['name'=>'File']),
+                            'resolve' => function($fieldset) {
+                                return $fieldset['file'];
+                            }
                         ]
-                    ])),
-                    'resolve' => function($post) {
-                        return get_field('downloads',$post->ID) ?: [];
-                    }
+                    ]
                 ])),
-                    'resolve' => function($post) {
-                        return static::getTourDates($post);
-                    }
-                ]
+                'resolve' => function($post) {
+                    return get_field('downloads',$post->ID) ?: [];
+                }
+            ])),
+                'resolve' => function($post) {
+                    return static::getTourDates($post);
+                }
             ]
-        ];
-        return $types;
-    }
-    
-    },10);
+        ]
+    ];
+    return $types;
+}
+
+},10);
 ```
