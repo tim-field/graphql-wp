@@ -107,7 +107,7 @@ use \Mohiohio\GraphQLWP\Schema;
 
 add_filter('graphql-wp/get_post_types', function($types) {
 
-    $types[self::TYPE] = [
+    $types['artist'] = [
         'name' => 'Artist',
         'description' => 'A custom post type example',
         'fields' => [
