@@ -619,7 +619,7 @@ class Schema
           'ID' => [
               'name' => 'ID',
               'description' => 'id of the post',
-              'type' => Type::string()
+              'type' => Type::int()
           ],
           'slug' => [
               'name' => 'slug',

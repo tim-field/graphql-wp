@@ -45,7 +45,7 @@ Router::routes([
             null;
         log('post', $_POST);
         log('data', $data);
-            
+
         if($requestString) {
             log("requestString", $requestString);
             try {
@@ -66,8 +66,10 @@ Router::routes([
                 ];
             }
             echo json_encode($result);
+            exit;
         }
         echo json_encode(['error' => ['message' => 'wrong query format or emtpy query']]);
+        exit;
     }
 ]);
 

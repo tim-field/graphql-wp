@@ -25,19 +25,30 @@ Assuming you have something like this in your composer.json file ( so it knows t
 
 The best way to explore / develop with this is by using a tool such as [ChromeiQL](https://chrome.google.com/webstore/detail/chromeiql/fkkiamalmpiidkljmicmjfbieiclmeij) That will show you the endpoints and arguments that are available.
 
+###curl
+
+Currently the only one working solutions is to use curl:
+
+`curl http://127.0.0.1:8080/graphql -X POST -d query='{wp_post(ID: 1) {title }}'`
+
+This will actually return this result:
+
+`{"data":{"wp_post":{"title":"Hello world!"}}}%`
+
+
 ###wp_query
 This is designed to follow WordPress' existing WP Query functions.  So as a rule you can pass the same parameters as your can to [WP Query](https://codex.wordpress.org/Class_Reference/WP_Query)*.
 
-**In reality there are a lot of params you can pass to WP_Query, and I've only implemented the ones that I've needed so far. But adding more is trivial as the arguments are just passed directly to the get_posts function, so its just a matter of defining them in the schema.* 
+**In reality there are a lot of params you can pass to WP_Query, and I've only implemented the ones that I've needed so far. But adding more is trivial as the arguments are just passed directly to the get_posts function, so its just a matter of defining them in the schema.*
 
-    {"query":"{ 
-    	wp_query { 
-    		posts(paged: 1 posts_per_page: 10)  { 
-    			title 
-    			name 
-    			terms (taxonomy:\"category\") { 
-    				name 
-    				slug 
+    {"query":"{
+    	wp_query {
+    		posts(paged: 1 posts_per_page: 10)  {
+    			title
+    			name
+    			terms (taxonomy:\"category\") {
+    				name
+    				slug
     			}
     		}
     	}
@@ -60,12 +71,12 @@ Will give you
               ]
            } ...
 
-Also available on wp_query menu 
+Also available on wp_query menu
 
     {"query":
-	    "{ wp_query 
-		    { menu(name: \"Main Menu\")  { 
-			    title 
+	    "{ wp_query
+		    { menu(name: \"Main Menu\")  {
+			    title
 			    url
 			}
 		}
@@ -95,12 +106,12 @@ And of course you can get an individual post *( but most of the time you'll prob
 ###Custom Post Types
 
 This is how I'm adding custom post types ( which have custom fields ) to my client specific plugin.  
- **graphql-wp/get_post_types** is a good hook for this *( there are other hooks, check the source, I'll endeavour to document them soon  )* 
+ **graphql-wp/get_post_types** is a good hook for this *( there are other hooks, check the source, I'll endeavour to document them soon  )*
 
 Where `$types` is a hash of the schema we are working with, so just add new items into this and you are good to go.
 
     add_filter('graphql-wp/get_post_types', function($types, $WPSchema) {
-    
+
         $types[self::TYPE] = [
             'name' => 'Artist',
             'description' => 'A custom post type example',
@@ -156,6 +167,5 @@ Where `$types` is a hash of the schema we are working with, so just add new item
         ];
         return $types;
     }
-    
-    },10, 2);
 
+    },10, 2);
