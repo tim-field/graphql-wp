@@ -24,6 +24,12 @@ Router::routes([
         header('Access-Control-Allow-Origin: *');
         header('Content-Type: application/json');
 
+        log('content type', $_SERVER);
+
+        // @TODO - continue: $_SERVER['HTTP_CONTENT_TYPE'] ||  $_SERVER['CONTENT_TYPE'] - or the latter is not needed
+        // $contentTypeIsJson = isset($_SERVER['HTTP_CONTENT_TYPE']
+        // 
+
         if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] === 'application/json') {
             $rawBody = file_get_contents('php://input');
             $data = json_decode($rawBody ?: '', true);

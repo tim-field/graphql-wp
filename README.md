@@ -35,6 +35,14 @@ This will actually return this result:
 
 `{"data":{"wp_post":{"title":"Hello world!"}}}%`
 
+This query:
+
+`curl http://127.0.0.1:8080/graphql -X POST -d query='{wp_query { posts(paged: 1 posts_per_page: 10)  { title, name } } }' `
+
+will return this response:
+
+`{"data":{"wp_query":{"posts":[{"title":"Hello world!","name":"hello-world"}]}}}%`
+
 
 ###wp_query
 This is designed to follow WordPress' existing WP Query functions.  So as a rule you can pass the same parameters as your can to [WP Query](https://codex.wordpress.org/Class_Reference/WP_Query)*.
