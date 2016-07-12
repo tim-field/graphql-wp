@@ -25,6 +25,10 @@ Assuming you have something like this in your composer.json file ( so it knows t
 
 The best way to explore / develop with this is by using a tool such as [ChromeiQL](https://chrome.google.com/webstore/detail/chromeiql/fkkiamalmpiidkljmicmjfbieiclmeij) That will show you the endpoints and arguments that are available.
 
+This is how a successfull query looks like in ChromeiQL:
+
+![https://raw.githubusercontent.com/balintsera/graphql-wp/fix/no-response/.readme.md/graphiql-query.png](https://raw.githubusercontent.com/balintsera/graphql-wp/fix/no-response/.readme.md/graphiql-query.png)
+
 ###curl
 
 Currently the only one working solutions is to use curl:
