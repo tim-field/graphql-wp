@@ -43,6 +43,17 @@ will return this response:
 
 `{"data":{"wp_query":{"posts":[{"title":"Hello world!","name":"hello-world"}]}}}%`
 
+When sending raw requests (eg. with Postman) be aware that new line is invalid in JSON, so send something like this:
+
+```json
+
+{
+  "query": "{\n    wp_query {\n        posts(paged: 1 posts_per_page: 10)  {\n            title\n            name\n            terms (taxonomy:\"category\") {\n                name\n                slug\n            }\n        }\n    }\n}"
+}
+
+```  
+
+Or remove the \n -s completely.
 
 ###wp_query
 This is designed to follow WordPress' existing WP Query functions.  So as a rule you can pass the same parameters as your can to [WP Query](https://codex.wordpress.org/Class_Reference/WP_Query)*.

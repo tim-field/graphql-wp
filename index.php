@@ -33,12 +33,18 @@ Router::routes([
 
         if ($contentTypeIsJson) {
             $rawBody = file_get_contents('php://input');
+
+            log('rawBody', $rawBody);
             try {
-              $data = json_decode($rawBody);
+              $data = json_decode($rawBody, true);
             } catch (\Exception $exception) {
               jsonResponse(['errors' => ['message' => 'Decoding body failed. Be sure to send valid json request.']]);
             }
 
+            // Decoded response is still empty
+            if (strlen($rawBody) > 0 && null === $data) {
+                jsonResponse(['errors' => ['message' => 'Decoding body failed. Be sure to send valid json request. Check for line feeds in json (it\'s not valid, replace them with "\n" or remove them)']]);
+            }
             log('raw data ' , var_export($data, true) );
         } else {
             $data = $_POST;
