@@ -14,26 +14,32 @@ require __DIR__.'/autoload.php';
 
 use \GraphQL\GraphQL;
 use \Mohiohio\WordPress\Router;
+use Mohiohio\GraphQLWP\Exception\RequestException;
 
 const ENDPOINT = '/graphql/';
 
 Router::routes([
 
     ENDPOINT => function() {
-
         header('Access-Control-Allow-Origin: *');
         header('Content-Type: application/json');
 
-        log('content type', $_SERVER);
+        log('content type', $_SERVER['HTTP_CONTENT_TYPE']);
 
-        // @TODO - continue: $_SERVER['HTTP_CONTENT_TYPE'] ||  $_SERVER['CONTENT_TYPE'] - or the latter is not needed
-        // $contentTypeIsJson = isset($_SERVER['HTTP_CONTENT_TYPE']
-        // 
+        $contentTypeIsJson = (isset($_SERVER['HTTP_CONTENT_TYPE']) && $_SERVER['HTTP_CONTENT_TYPE'] == 'application/json')
+            ||  (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/json');
 
-        if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] === 'application/json') {
+        log('contentTypeIsJson', $contentTypeIsJson);
+
+        if ($contentTypeIsJson) {
             $rawBody = file_get_contents('php://input');
-            $data = json_decode($rawBody ?: '', true);
-            //\Analog::log('raw with '.var_export($rawBody,true),\Analog::DEBUG);
+            try {
+              $data = json_decode($rawBody);
+            } catch (\Exception $exception) {
+              jsonResponse(['errors' => ['message' => 'Decoding body failed. Be sure to send valid json request.']]);
+            }
+
+            log('raw data ' , var_export($data, true) );
         } else {
             $data = $_POST;
             //\Analog::log('post ',\Analog::DEBUG);
@@ -71,13 +77,28 @@ Router::routes([
                     ]
                 ];
             }
-            echo json_encode($result);
-            exit;
+            log('result', $result);
+            jsonResponse($result);
         }
-        echo json_encode(['error' => ['message' => 'wrong query format or emtpy query']]);
-        exit;
+        jsonResponse(['errors' => ['message' => 'wrong query format or emtpy query']]);
     }
 ]);
+
+/**
+ * Sends a json object to the client
+ * @param  array  $resp response object
+ * @return [type]       [description]
+ */
+function jsonResponse(array $resp) {
+  try {
+    $jsonResponse = json_encode($resp);
+  } catch(\Exception $exception) {
+    jsonResponse(['errors' => ['message' => 'Failed to encode to JSON the response.']]);
+  }
+
+  echo $jsonResponse;
+  exit;
+}
 
 function log($message)  {
     $function_args = func_get_args();
