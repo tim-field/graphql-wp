@@ -43,7 +43,7 @@ Router::routes([
 
             // Decoded response is still empty
             if (strlen($rawBody) > 0 && null === $data) {
-                jsonResponse(['errors' => ['message' => 'Decoding body failed. Be sure to send valid json request. Check for line feeds in json (it\'s not valid, replace them with "\n" or remove them)']]);
+                jsonResponse(['errors' => ['message' => 'Decoding body failed. Be sure to send valid json request. Check for line feeds in json (replace them with "\n" or remove them)']]);
             }
             log('raw data ' , var_export($data, true) );
         } else {
@@ -86,7 +86,7 @@ Router::routes([
             log('result', $result);
             jsonResponse($result);
         }
-        jsonResponse(['errors' => ['message' => 'wrong query format or emtpy query']]);
+        jsonResponse(['errors' => ['message' => 'Wrong query format or emtpy query. Eighter send raw query _with_ Content-Type: \'application/json\' header or send query by posting www-form-data with a query="query{}..." parameter']]);
     }
 ]);
 
@@ -106,7 +106,15 @@ function jsonResponse(array $resp) {
   exit;
 }
 
+/**
+ * Log a message to the SAPi (terminal) (only when WP_DEBUG is set to true)
+ * @param  string $message The message to log to terminal
+ * @return [type]          [description]
+ */
 function log($message)  {
+    if (!WP_DEBUG) {
+      return;
+    }
     $function_args = func_get_args();
     // The first is a simple string message, the others should be var_exportetd
     array_shift($function_args);
