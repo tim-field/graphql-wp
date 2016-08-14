@@ -11,10 +11,11 @@
 namespace Mohiohio\GraphQLWP;
 
 use \GraphQL\GraphQL;
+use \Mohiohio\WordPress\Router;
 
 const ENDPOINT = '/graphql/';
 
-\Mohiohio\WordPress\Router::routes([
+Router::routes([
 
     ENDPOINT => function() {
 
