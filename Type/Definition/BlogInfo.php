@@ -4,9 +4,10 @@ namespace Mohiohio\GraphQLWP\Type\Definition;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
-use GraphQL\Type\Definition\ListOfType;
 
 class BlogInfo extends ObjectType {
+
+    use Instance;
 
     function __construct($config=[]) {
         parent::__construct($this->getSchema($config));

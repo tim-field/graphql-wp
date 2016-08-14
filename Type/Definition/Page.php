@@ -4,7 +4,7 @@ namespace Mohiohio\GraphQLWP\Type\Definition;
 
 class Page extends Post {
 
-    function getDescription() {
+    static function getDescription() {
         return 'A standard WordPress page';
     }
 }

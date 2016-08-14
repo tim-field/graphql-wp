@@ -6,15 +6,10 @@ use GraphQL\Type\Definition\Type;
 use GraphQLRelay\Relay;
 
 use Mohiohio\GraphQLWP\Type\Definition\WPQuery;
-use Mohiohio\GraphQLWP\Type\Definition\PostStatus;
 use Mohiohio\GraphQLWP\Type\Definition\WPPost;
 use Mohiohio\GraphQLWP\Type\Definition\WPTerm;
-use Mohiohio\GraphQLWP\Type\Definition\Post;
-use Mohiohio\GraphQLWP\Type\Definition\Page;
-use Mohiohio\GraphQLWP\Type\Definition\Tag;
-use Mohiohio\GraphQLWP\Type\Definition\Category;
-use Mohiohio\GraphQLWP\Type\Definition\PostFormat;
-use Mohiohio\GraphQLWP\Type\Definition\BlogInfo;
+
+use function Stringy\create as s;
 
 class Schema
 {
@@ -37,7 +32,7 @@ class Schema
 
     static function init() {
 
-        static::$postTypes = apply_filters('graphql-wp/get_post_types',[
+        /*static::$postTypes = apply_filters('graphql-wp/get_post_types',[
             'post' => new Post,
             'page' => new Page,
         ]);
@@ -46,10 +41,10 @@ class Schema
             'category' => new Category,
             'tag' => new Tag,
             'post_format' => new PostFormat,
-        ]);
+        ]);*/
     }
 
-    static function getPostInterfaceType() {
+    /*static function getPostInterfaceType() {
 
         return static::$postInterface ?: static::$postInterface = new WPPost([
             'resolveType' => function ($obj) {
@@ -60,14 +55,6 @@ class Schema
         ]);
     }
 
-    static function getPostType($type = null) {
-        return static::$postTypes[ $type ?: self::DEFAULT_POST_TYPE ];
-    }
-
-    static function getPostStatusType() {
-        return static::$postStatus ?: static::$postStatus = new PostStatus();
-    }
-
     static function getTermInterfaceType() {
         return static::$termInterface ?: static::$termInterface = new WPTerm([
             'resolveType' => function ($obj) {
@@ -76,7 +63,7 @@ class Schema
                 }
             }
         ]);
-    }
+    }*/
 
     static function getNodeDefinition() {
 
@@ -96,21 +83,23 @@ class Schema
         },
         function($object) {
 
+            $Type = '';
+
             if ($object instanceOf \WP_Post ) {
-                return static::$postTypes[$object->post_type];
+                //return static::$postTypes[$object->post_type];
+                $Type = __NAMESPACE__.'\\'.s($object->post_type)->upperCamelize();
             }
             if ($object instanceOf \WP_Term) {
-                return static::$termTypes[$object->taxonomy];
+                $Type = __NAMESPACE__.'\\'.s($object->taxonomy)->upperCamelize();
+            }
+
+            \Mohiohio\GraphQL\log('Type is',$Type);
+            \Mohiohio\GraphQL\log('class_exists',class_exists($Type));
+
+            if($Type && class_exists($Type)) {
+                $Type::getInstance();
             }
         });
-    }
-
-    static function getWPQuery() {
-        return static::$wpQuery ?: static::$wpQuery = new WPQuery;
-    }
-
-    static function getBlogInfoType() {
-        return static::$blogInfo ?: static::$blogInfo = new BlogInfo;
     }
 
     static function getQueryArgsPost() {
@@ -155,19 +144,19 @@ class Schema
             'name' => 'Query',
             'fields' => [
                 'wp_query' => [
-                    'type' => static::getWPQuery(),
+                    'type' => WPQuery::getInstance(),
                     'resolve' => function($root, $args) {
                         global $wp_query;
                         return $wp_query;
                     }
                 ],
                 'wp_post' => [
-                    'type' => static::getPostInterfaceType(),
+                    'type' => WPPost::getInstance(),
                     'args' => static::getQueryArgsPost(),
                     'resolve' => [get_called_class(), 'postQueryResolve']
                 ],
                 'term' => [
-                    'type' => static::getTermInterfaceType(),
+                    'type' => WPTerm::getInstance(),
                     'args' => [
                         'id' => [
                             'type' => Type::string(),

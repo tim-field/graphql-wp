@@ -2,42 +2,22 @@
 
 namespace Mohiohio\GraphQLWP\Type\Definition;
 
-use \GraphQL\Type\Definition\ObjectType;
 use \Mohiohio\GraphQLWP\Schema as WPSchema;
 
-class Post extends ObjectType {
+class Post extends WPObjectType {
 
-    function __construct($config=[]) {
-        parent::__construct($this->getSchema($config));
-    }
+    use Instance;
 
-    function getSchema($config) {
-
-        return apply_filters('graphql-wp/get_'.$this->getType().'_schema', array_replace_recursive([
-            'name' => $this->getName(),
-            'description' => $this->getDescription(),
-            'fields' => $this->getFieldSchema(),
-            'interfaces' => $this->getInterfaces()
-        ],$config));
-    }
-
-    function getName() {
-        return (new \ReflectionClass($this))->getShortName();
-    }
-
-    function getDescription() {
+    static function getDescription() {
         return 'A standard WordPress blog post';
     }
 
-    function getType() {
-        return strtolower($this->getName());
+    static function getFieldSchema() {
+        return WPPost::getFieldSchema();
     }
 
-    function getFieldSchema() {
-        return WPPost::fields();
-    }
-
-    function getInterfaces() {
+    static function getSchemaInterfaces(){
+        \Analog::log('calling getSchemaInterfaces from Post');
         return [WPSchema::getPostInterfaceType(), WPSchema::getNodeDefinition()['nodeInterface']];
     }
 }

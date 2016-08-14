@@ -103,7 +103,7 @@ function jsonResponse(array $resp) {
  * @return [type]          [description]
  */
 function log($message)  {
-    if (!WP_DEBUG) {
+    if (true || !WP_DEBUG) {
       return;
     }
     $function_args = func_get_args();

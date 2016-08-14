@@ -2,30 +2,35 @@
 
 namespace Mohiohio\GraphQLWP\Type\Definition;
 
-use \GraphQL\Type\Definition\InterfaceType;
 use \GraphQL\Type\Definition\Type;
 use \GraphQL\Type\Definition\ListOfType;
 use \GraphQLRelay\Relay;
-use \Mohiohio\GraphQLWP\Schema as WPSchema;
+use \Mohiohio\GraphQLWP\Schema;
+use function Stringy\create as s;
 
-class WPPost extends InterfaceType {
+class WPPost extends WPInterfaceType {
 
     const TYPE = 'WP_Post';
+    const DEFAULT_TYPE = 'post';
 
-    function __construct($config) {
-        parent::__construct($this->getSchema($config));
+    static function getDescription() {
+        return 'The base WordPress post type';
     }
 
-    function getSchema($config) {
+    static function resolveType($obj) {
+        \Analog::log('resolving type for '.var_export($obj,true));
 
-        return apply_filters('graphql-wp/get_post_interface_schema', array_replace_recursive([
-          'name' => self::TYPE,
-          'description' => 'The base WordPress post type',
-          'fields' => static::fields(),
-      ], $config));
+        $ObjectType = __NAMESPACE__.'\\'.s($obj->post_type)->upperCamelize();
+
+        \Analog::log('Type is '.$ObjectType);
+
+        if(class_exists($ObjectType)){
+            \Analog::log('Returing instance!'.($ObjectType::getInstance())->getName());
+            return $ObjectType::getInstance();
+        }
     }
 
-    static function fields() {
+    static function getFieldSchema() {
         return [
             'id' => Relay::globalIdField(self::TYPE, function($post){
                 return $post->ID;
@@ -96,7 +101,7 @@ class WPPost extends InterfaceType {
                 }
             ],
             'status' => [
-                'type' => WPSchema::getPostStatusType(),
+                'type' => PostStatus::getInstance(),
                 'description' => 'Status of the post',
                 'resolve' => function($post) {
                     return $post->post_status;
@@ -104,7 +109,7 @@ class WPPost extends InterfaceType {
             ],
             'parent' => [
                 'type' => function() {
-                    return WPSchema::getPostInterfaceType();
+                    return static::getInstance();
                 },
                 'description' => 'Parent of this post',
                 'resolve' => function($post) {
@@ -152,7 +157,7 @@ class WPPost extends InterfaceType {
                 }
             ],
             'terms' => [
-                'type' => new ListOfType(WPSchema::getTermInterfaceType()),
+                'type' => new ListOfType(WPTerm::getInstance()),
                 'description' => 'Terms ( Categories, Tags etc ) or this post',
                 'args' => [
                     'taxonomy' => [

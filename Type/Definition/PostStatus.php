@@ -3,17 +3,16 @@
 namespace Mohiohio\GraphQLWP\Type\Definition;
 
 use \GraphQL\Type\Definition\EnumType;
-use \GraphQL\Type\Definition\Type;
-use \GraphQL\Type\Definition\ListOfType;
-use \GraphQLRelay\Relay;
 
 class PostStatus extends EnumType {
 
+    use Instance;
+
     function __construct($config=[]) {
-        parent::__construct($this->getSchema($config));
+        parent::__construct(static::getSchema($config));
     }
 
-    function getSchema($config) {
+    static function getSchema($config) {
         return apply_filters('grapql-wp/get_post_status_schema',array_replace_recursive([
           'name' => 'PostStatus',
           'description' => 'A valid post status',

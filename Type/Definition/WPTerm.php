@@ -6,26 +6,31 @@ use \GraphQL\Type\Definition\InterfaceType;
 use \GraphQL\Type\Definition\Type;
 use \GraphQL\Type\Definition\ListOfType;
 use \GraphQLRelay\Relay;
-use \Mohiohio\GraphQLWP\Schema as WPSchema;
 
-class WPTerm extends InterfaceType {
+use function Stringy\create as s;
+
+class WPTerm extends WPInterfaceType {
 
     const TYPE = 'WP_Term';
 
-    function __construct($config) {
-        parent::__construct($this->getSchema($config));
+    static function getDescription() {
+        return 'Base class for taxonomies such as Category & Tag';
     }
 
-    function getSchema($config) {
+    static function resolveType($obj) {
+        \Analog::log('resolving type for '.var_export($obj,true));
+        \Analog::log('static::$instance is '.var_export((static::$instance)->getName(),true));
 
-        return apply_filters('graphql-wp/get_term_interface_schema', array_replace_recursive([
-            'name' => self::TYPE,
-            'description' => 'Base class for taxonomies such as Category & Tag',
-            'fields' => static::fields()
-        ],$config));
+        $ObjectType = __NAMESPACE__.'\\'.s($obj->taxonomy)->upperCamelize();
+
+        \Analog::log('Type is '.$ObjectType);
+
+        if(class_exists($ObjectType)){
+            return $ObjectType::getInstance();
+        }
     }
 
-    static function fields() {
+    static function getFieldSchema() {
         return [
             'id' => Relay::globalIdField(self::TYPE, function($term) {
                 return $term->term_id;
@@ -37,13 +42,13 @@ class WPTerm extends InterfaceType {
             'taxonomy' => ['type' => Type::string()],
             'description' => ['type' => Type::string()],
             'parent' => [
-                'type' => function(){
-                    return WPSchema::getTermInterfaceType();
+                'type' => function() {
+                    return static::getInstance();
                 }
             ],
             'children' => [
                 'type' => function() {
-                    return new ListOfType(WPSchema::getTermInterfaceType());
+                    return new ListOfType(static::getInstance());
                 },
                 'description' => 'retrieves children of the term',
                 'resolve' => function($term) {
