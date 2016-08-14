@@ -2,32 +2,43 @@
 
 namespace Mohiohio\GraphQLWP\Type\Definition;
 
-use \GraphQL\Type\Definition\InterfaceType;
-use \GraphQL\Type\Definition\Type;
-use \GraphQL\Type\Definition\ListOfType;
-use \GraphQLRelay\Relay;
-
-use function Stringy\create as s;
+use GraphQL\Type\Definition\Type;
+use GraphQL\Type\Definition\ListOfType;
+use GraphQLRelay\Relay;
 
 class WPTerm extends WPInterfaceType {
 
     const TYPE = 'WP_Term';
 
-    static function getDescription() {
-        return 'Base class for taxonomies such as Category & Tag';
+    use Instance;
+
+    static $instances;
+    static $types;
+
+    static function init() {
+        static::$types = apply_filters('graphql-wp/get_post_types',[
+            'category' => function() {
+                return new Category;
+            },
+            'tag' => function() {
+                return new Tag;
+            },
+            'post_format' => function(){
+                return new PostFormat;
+            }
+        ]);
     }
 
     static function resolveType($obj) {
-        \Analog::log('resolving type for '.var_export($obj,true));
-        \Analog::log('static::$instance is '.var_export((static::$instance)->getName(),true));
-
-        $ObjectType = __NAMESPACE__.'\\'.s($obj->taxonomy)->upperCamelize();
-
-        \Analog::log('Type is '.$ObjectType);
-
-        if(class_exists($ObjectType)){
-            return $ObjectType::getInstance();
+        if($obj instanceOf \WP_Term) {
+            return isset(static::$instances[$obj->taxonomy])
+                ? static::$instances[$obj->taxonomy]
+                : static::$instances[$obj->taxonomy] = static::$types[$obj->taxonomy]();
         }
+    }
+
+    static function getDescription() {
+        return 'Base class for taxonomies such as Category & Tag';
     }
 
     static function getFieldSchema() {

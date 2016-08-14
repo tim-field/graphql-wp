@@ -31,8 +31,10 @@ class Schema
     }
 
     static function init() {
-
-        /*static::$postTypes = apply_filters('graphql-wp/get_post_types',[
+        WPPost::init();
+        WPTerm::init();
+        /*
+        static::$postTypes = apply_filters('graphql-wp/get_post_types',[
             'post' => new Post,
             'page' => new Page,
         ]);

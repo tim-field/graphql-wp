@@ -7,6 +7,8 @@ use GraphQL\Type\Definition\ListOfType;
 
 class WPQuery extends WPObjectType {
 
+    use Instance;
+
     static function getDescription() {
         return 'deals with the intricacies of a post request on a WordPress blog';
     }

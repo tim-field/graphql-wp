@@ -6,8 +6,6 @@ use \Mohiohio\GraphQLWP\Schema as WPSchema;
 
 class Post extends WPObjectType {
 
-    use Instance;
-
     static function getDescription() {
         return 'A standard WordPress blog post';
     }
@@ -16,8 +14,8 @@ class Post extends WPObjectType {
         return WPPost::getFieldSchema();
     }
 
-    static function getSchemaInterfaces(){
-        \Analog::log('calling getSchemaInterfaces from Post');
-        return [WPSchema::getPostInterfaceType(), WPSchema::getNodeDefinition()['nodeInterface']];
+    static function getSchemaInterfaces() {
+        \Analog::log('schema intefraces for post');
+        return [WPPost::getInstance(), WPSchema::getNodeDefinition()['nodeInterface']];
     }
 }

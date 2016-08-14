@@ -7,6 +7,8 @@ use \GraphQL\Type\Definition\ListOfType;
 
 class MenuItem extends WPObjectType {
 
+    use Instance;
+
     static function getDescription() {
         return 'Items in a navigation menu';
     }

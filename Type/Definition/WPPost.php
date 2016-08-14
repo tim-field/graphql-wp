@@ -13,21 +13,35 @@ class WPPost extends WPInterfaceType {
     const TYPE = 'WP_Post';
     const DEFAULT_TYPE = 'post';
 
-    static function getDescription() {
-        return 'The base WordPress post type';
+    use Instance;
+
+    static $instances;
+    static $types;
+
+    static function init(){
+        static::$types = apply_filters('graphql-wp/get_post_types',[
+            'post' => function() {
+                return new Post;
+            },
+            'page' => function() {
+                return new Page;
+            }
+        ]);
     }
 
     static function resolveType($obj) {
-        \Analog::log('resolving type for '.var_export($obj,true));
-
-        $ObjectType = __NAMESPACE__.'\\'.s($obj->post_type)->upperCamelize();
-
-        \Analog::log('Type is '.$ObjectType);
-
-        if(class_exists($ObjectType)){
-            \Analog::log('Returing instance!'.($ObjectType::getInstance())->getName());
-            return $ObjectType::getInstance();
+        //I need to find one of my instances
+        \Analog::log('resolving type in obj '.static::getName());
+        if($obj instanceOf \WP_Post){
+            \Analog::log('instance of wp_post '.$obj->post_type);
+            return isset(static::$instances[$obj->post_type])
+                ? static::$instances[$obj->post_type]
+                : static::$instances[$obj->post_type] = static::$types[$obj->post_type]();
         }
+    }
+
+    static function getDescription() {
+        return 'The base WordPress post type';
     }
 
     static function getFieldSchema() {

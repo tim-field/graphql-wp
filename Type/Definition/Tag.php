@@ -15,6 +15,6 @@ class Tag extends WPObjectType {
     }
 
     static function getSchemaInterfaces() {
-        return [WPSchema::getTermInterfaceType(), WPSchema::getNodeDefinition()['nodeInterface']];
+        return [WPTerm::getInstance(), WPSchema::getNodeDefinition()['nodeInterface']];
     }
 }
