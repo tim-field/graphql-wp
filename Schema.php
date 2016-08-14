@@ -399,7 +399,7 @@ class Schema
 }
 
 
-  function getWPQuery() {
+  static function getWPQuery() {
       return static::$wpQuery ?: static::$wpQuery = new ObjectType(static::getWPQuerySchema());
   }
 
@@ -619,7 +619,7 @@ class Schema
           'ID' => [
               'name' => 'ID',
               'description' => 'id of the post',
-              'type' => Type::string()
+              'type' => Type::int()
           ],
           'slug' => [
               'name' => 'slug',
