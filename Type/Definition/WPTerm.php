@@ -9,31 +9,21 @@ use GraphQLRelay\Relay;
 class WPTerm extends WPInterfaceType {
 
     const TYPE = 'WP_Term';
-
-    use Instance;
+    const DEFAULT_TYPE = 'category';
 
     static $instances;
-    static $types;
 
     static function init() {
-        static::$types = apply_filters('graphql-wp/get_post_types',[
-            'category' => function() {
-                return new Category;
-            },
-            'tag' => function() {
-                return new Tag;
-            },
-            'post_format' => function(){
-                return new PostFormat;
-            }
+        static::$instances = apply_filters('graphql-wp/get_post_types',[
+            'category' => new Category,
+            'tag' => new Tag,
+            'post_format' => new PostFormat
         ]);
     }
 
     static function resolveType($obj) {
-        if($obj instanceOf \WP_Term) {
-            return isset(static::$instances[$obj->taxonomy])
-                ? static::$instances[$obj->taxonomy]
-                : static::$instances[$obj->taxonomy] = static::$types[$obj->taxonomy]();
+        if($obj instanceOf \WP_Term){
+            return isset(static::$instances[$obj->taxonomy]) ? static::$instances[$obj->taxonomy] : static::$instances[self::DEFAULT_TYPE];
         }
     }
 
@@ -66,6 +56,16 @@ class WPTerm extends WPInterfaceType {
                     return array_map(function($id) use ($term) {
                         return get_term( $id, $term->taxonomy);
                     }, get_term_children($term->term_id,$term->taxonomy));
+                }
+            ],
+            'image' => [
+                'type' => function() {
+                    return Attachment::getInstance();
+                },
+                'resolve' => function($term) {
+                    if($thumbnail_id = get_term_meta( $term->term_id, 'thumbnail_id', true )){
+                        return get_post($thumbnail_id);
+                    }
                 }
             ]
         ];

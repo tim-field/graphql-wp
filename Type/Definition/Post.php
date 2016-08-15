@@ -15,7 +15,6 @@ class Post extends WPObjectType {
     }
 
     static function getSchemaInterfaces() {
-        \Analog::log('schema intefraces for post');
         return [WPPost::getInstance(), WPSchema::getNodeDefinition()['nodeInterface']];
     }
 }

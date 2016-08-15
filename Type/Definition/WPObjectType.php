@@ -9,7 +9,6 @@ abstract class WPObjectType extends ObjectType {
     use WPSchema;
 
     static function getSchemaInterfaces() {
-        \Analog::log('calling getSchemaInterfaces for '.static::getName());
         return [];
     }
 

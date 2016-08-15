@@ -6,6 +6,8 @@ use function Stringy\create as s;
 
 trait WPSchema {
 
+    use Instance;
+
     function __construct($config=[]) {
         parent::__construct(static::getSchema($config));
     }

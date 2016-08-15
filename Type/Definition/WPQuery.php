@@ -7,8 +7,6 @@ use GraphQL\Type\Definition\ListOfType;
 
 class WPQuery extends WPObjectType {
 
-    use Instance;
-
     static function getDescription() {
         return 'deals with the intricacies of a post request on a WordPress blog';
     }
@@ -17,54 +15,19 @@ class WPQuery extends WPObjectType {
         return [
             'posts' => [
                 'type' => new ListOfType(WPPost::getInstance()),
-                'args' => [
-                    'posts_per_page' => [
-                        'description' => 'number of post to show per page',
-                        'type' => Type::int(),
-                    ],
-                    'paged' => [
-                        'description' => 'number of page.',
-                        'type' => Type::int(),
-                    ],
-                    'post_type' => [
-                        'description' => "Retrieves posts by Post Types, default value is 'post'.",
-                        'type' => new ListOfType(Type::string()),
-                    ],
-                    'name' => [
-                        'description' => "Retrieves post by name",
-                        'type' => Type::string(),
-                    ],
-                    'order' => [
-                        'description' => "Designates the ascending or descending order of the 'orderby' parameter. Defaults to 'DESC'. An array can be used for multiple order/orderby sets.",
-                        'type' => Type::string()
-                    ],
-                    'orderby' => [
-                        'description' => "Sort retrieved posts by parameter. Defaults to 'date (post_date)'. One or more options can be passed.",
-                        'type' => Type::string()
-                    ],
-                    's' => [
-                        'description' => "Show posts based on a keyword search.",
-                        'type' => Type::string()
-                    ],
-                    'cat' => [
-                        'description' => "Show in this category id",
-                        'type' => Type::int()
-                    ],
-                    'category_name' => [
-                        'description' => "Show in this category slug",
-                        'type' => Type::string()
-                    ],
-                    'tag' => [
-                        'description' => "Show in this tag slug",
-                        'type' => Type::string()
-                    ],
-                    'tag_id' => [
-                        'description' => "Show in this tag id",
-                        'type' => Type::int()
-                    ]
-                ],
+                'args' => static::wpQueryParams(),
                 'resolve' => function($root, $args) {
                     return $args ? get_posts($args) : $root->posts;
+                }
+            ],
+            'products' => [ //TODO append only if WC installed
+                'type' => new ListOfType(WCProduct::getInstance()),
+                'args' => static::wpQueryParams(),
+                'resolve' => function($root, $args) {
+                    $posts = $args ? get_posts($args) : $root->posts;
+                    return array_map( function($post) {
+                        return wc_get_product($post);
+                    }, $posts);
                 }
             ],
             'menu' => [
@@ -188,6 +151,55 @@ class WPQuery extends WPObjectType {
 
                     return get_terms($taxonomies, $args);
                 }
+            ]
+        ];
+    }
+
+        static function wpQueryParams() {
+        return [
+            'posts_per_page' => [
+                'description' => 'number of post to show per page',
+                'type' => Type::int(),
+            ],
+            'paged' => [
+                'description' => 'number of page.',
+                'type' => Type::int(),
+            ],
+            'post_type' => [
+                'description' => "Retrieves posts by Post Types, default value is 'post'.",
+                'type' => new ListOfType(Type::string()),
+            ],
+            'name' => [
+                'description' => "Retrieves post by name",
+                'type' => Type::string(),
+            ],
+            'order' => [
+                'description' => "Designates the ascending or descending order of the 'orderby' parameter. Defaults to 'DESC'. An array can be used for multiple order/orderby sets.",
+                'type' => Type::string()
+            ],
+            'orderby' => [
+                'description' => "Sort retrieved posts by parameter. Defaults to 'date (post_date)'. One or more options can be passed.",
+                'type' => Type::string()
+            ],
+            's' => [
+                'description' => "Show posts based on a keyword search.",
+                'type' => Type::string()
+            ],
+            'cat' => [
+                'description' => "Show in this category id",
+                'type' => Type::int()
+            ],
+            'category_name' => [
+                'description' => "Show in this category slug",
+                'type' => Type::string()
+            ],
+            'tag' => [
+                'description' => "Show in this tag slug",
+                'type' => Type::string()
+            ],
+            'tag_id' => [
+                'description' => "Show in this tag id",
+                'type' => Type::int()
             ]
         ];
     }

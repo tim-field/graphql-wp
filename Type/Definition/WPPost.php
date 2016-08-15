@@ -2,41 +2,27 @@
 
 namespace Mohiohio\GraphQLWP\Type\Definition;
 
-use \GraphQL\Type\Definition\Type;
-use \GraphQL\Type\Definition\ListOfType;
-use \GraphQLRelay\Relay;
-use \Mohiohio\GraphQLWP\Schema;
-use function Stringy\create as s;
+use GraphQL\Type\Definition\Type;
+use GraphQL\Type\Definition\ListOfType;
+use GraphQLRelay\Relay;
 
 class WPPost extends WPInterfaceType {
 
     const TYPE = 'WP_Post';
     const DEFAULT_TYPE = 'post';
 
-    use Instance;
-
     static $instances;
-    static $types;
 
-    static function init(){
-        static::$types = apply_filters('graphql-wp/get_post_types',[
-            'post' => function() {
-                return new Post;
-            },
-            'page' => function() {
-                return new Page;
-            }
+    static function init() {
+        static::$instances = apply_filters('graphql-wp/get_post_types',[
+            'post' => new Post,
+            'page' => new Page,
         ]);
     }
 
     static function resolveType($obj) {
-        //I need to find one of my instances
-        \Analog::log('resolving type in obj '.static::getName());
         if($obj instanceOf \WP_Post){
-            \Analog::log('instance of wp_post '.$obj->post_type);
-            return isset(static::$instances[$obj->post_type])
-                ? static::$instances[$obj->post_type]
-                : static::$instances[$obj->post_type] = static::$types[$obj->post_type]();
+            return isset(static::$instances[$obj->post_type]) ? static::$instances[$obj->post_type] : static::$instances[self::DEFAULT_TYPE];
         }
     }
 
@@ -168,6 +154,27 @@ class WPPost extends WPInterfaceType {
                 'type' => Type::string(),
                 'resolve' => function($post) {
                     return get_permalink($post);
+                }
+            ],
+            'thumbnail_url' => [
+                'description' => 'Retrieve the post thumbnail.',
+                'type' => Type::string(),
+                'args' => [
+                    'size' => ['type' => Type::string()]
+                ],
+                'resolve' => function($post) {
+                    return get_post_thumbnail_url( $post, isset($args['size']) ? $args['size'] : 'post-thumbnail') ?: null;
+                }
+            ],
+            'attached_media' => [
+                'type' => function(){
+                    return new ListOfType(Attachment::getInstance());
+                },
+                'args' => [
+                    'type' => ['type' => Type::nonNull(Type::string())]
+                ],
+                'resolve' => function($post, $args) {
+                    return get_attached_media($args['type'], $post->ID);
                 }
             ],
             'terms' => [
