@@ -62,8 +62,13 @@ class WPTerm extends WPInterfaceType {
                 'type' => function() {
                     return Attachment::getInstance();
                 },
-                'resolve' => function($term) {
-                    if($thumbnail_id = get_term_meta( $term->term_id, 'thumbnail_id', true )){
+                'args' => [
+                    'meta_key' => ['type' => Type::string()]
+                ],
+                'resolve' => function($term, $args) {
+                    $args += ['meta_key' => 'thumbnail_id'];
+                    extract($args);
+                    if($thumbnail_id = get_term_meta( $term->term_id, $meta_key, true )){
                         return get_post($thumbnail_id);
                     }
                 }
