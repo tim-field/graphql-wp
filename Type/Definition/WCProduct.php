@@ -52,6 +52,25 @@ class WCProduct extends WPInterfaceType {
                     return $product->get_price();
                 }
             ],
+            'terms' => [
+                'type' => new ListOfType(WPTerm::getInstance()),
+                'description' => 'Terms ( Categories, Tags etc ) or this product',
+                'args' => [
+                    'taxonomy' => [
+                        'description' => 'The taxonomy for which to retrieve terms. Defaults to cat.',
+                        'type' => Type::string(),
+                    ]
+                ],
+                'resolve' => function($product, $args) {
+
+                    $args += ['taxonomy' => 'cat'];
+                    extract($args);
+
+                    $res = wp_get_post_terms($product->id, 'product_'.$taxonomy);
+
+                    return is_wp_error($res) ? [] : $res;
+                }
+            ],
             'attributes' => [
                 'type' => new ListOfType(ProductAttribute::getInstance()),
                 'resolve' => function($product) {
@@ -118,6 +137,32 @@ class WCProduct extends WPInterfaceType {
                     }
                     return [];
                 },
+            ],
+            'images' => [
+                'type' => function(){
+                    return new ListOfType(Attachment::getInstance());
+                },
+                'resolve' => function($product) {
+
+                    if ( $product->is_type( 'variation' ) ) {
+                        if ( has_post_thumbnail( $product->get_variation_id() ) ) {
+                            // Add variation image if set.
+                            $attachment_ids[] = get_post_thumbnail_id( $product->get_variation_id() );
+                        } elseif ( has_post_thumbnail( $product->id ) ) {
+                            // Otherwise use the parent product featured image if set.
+                            $attachment_ids[] = get_post_thumbnail_id( $product->id );
+                        }
+                    } else {
+                        // Add featured image.
+                        if ( has_post_thumbnail( $product->id ) ) {
+                            $attachment_ids[] = get_post_thumbnail_id( $product->id );
+                        }
+                        // Add gallery images.
+                        $attachment_ids = array_merge( $attachment_ids, $product->get_gallery_attachment_ids() );
+                    }
+
+                    return get_posts(['post__in'=>$attachment_ids]);
+                }
             ],
 		];
     }

@@ -23,10 +23,14 @@ class Schema
     static function init() {
         WPPost::init();
         WPTerm::init();
-        if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+        if (static::withWooCommerce()) {
             WCProduct::init();
         }
         do_action('graphql-wp/schema_init');
+    }
+
+    static function withWooCommerce() {
+        return (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins',get_option( 'active_plugins' ))));
     }
 
     //TODO needs to be automated
