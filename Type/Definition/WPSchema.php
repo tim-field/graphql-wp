@@ -35,6 +35,6 @@ trait WPSchema {
     }
 
     static function getType() {
-        return s(static::getName())->underscored();
+        return (string) s(static::getName())->underscored();
     }
 }

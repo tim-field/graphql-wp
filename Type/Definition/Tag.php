@@ -2,7 +2,7 @@
 
 namespace Mohiohio\GraphQLWP\Type\Definition;
 
-use Mohiohio\GraphQLWP\Schema as WPSchema;
+use Mohiohio\GraphQLWP\Schema;
 
 class Tag extends WPObjectType {
 
@@ -15,6 +15,6 @@ class Tag extends WPObjectType {
     }
 
     static function getSchemaInterfaces() {
-        return [WPTerm::getInstance(), WPSchema::getNodeDefinition()['nodeInterface']];
+        return [WPTerm::getInstance(), Schema::getNodeDefinition()['nodeInterface']];
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Mohiohio\GraphQLWP\Type\Definition;
 
-use \Mohiohio\GraphQLWP\Schema as WPSchema;
+use \Mohiohio\GraphQLWP\Schema;
 
 class Post extends WPObjectType {
 
@@ -15,6 +15,6 @@ class Post extends WPObjectType {
     }
 
     static function getSchemaInterfaces() {
-        return [WPPost::getInstance(), WPSchema::getNodeDefinition()['nodeInterface']];
+        return [WPPost::getInstance(), Schema::getNodeDefinition()['nodeInterface']];
     }
 }
