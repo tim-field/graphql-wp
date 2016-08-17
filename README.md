@@ -99,71 +99,43 @@ And of course you can get an individual post *( but most of the time you'll prob
 
 ###Custom Post Types
 
-This is how I'm adding custom post types ( which have custom fields ) to my client specific plugin.  
- **graphql-wp/get_post_types** is a good hook for this.
-
+This is how you can add custom post types ( which have custom fields ) to a client specific plugin.
+graphql-wp/get_post_types is a good hook for this.
 Where `$types` is a hash of the schema we are working with, so just add new items into this and you are good to go.
 
 ```php
-use \Mohiohio\GraphQLWP\Schema;
+use GraphQL\Type\Definition\Type;
+use Mohiohio\GraphQLWP\Type\Definition\Post;
+use Mohiohio\GraphQLWP\Type\Definition\Attachment;
 
-add_filter('graphql-wp/get_post_types', function($types) {
+class Foo extends Post {
 
-    $types['artist'] = [
-        'name' => 'Artist',
-        'description' => 'A custom post type example',
-        'fields' => [
+    static function getDescription() {
+        return "A custom post type example, for post type `foo`";
+    }
+
+    static function getFieldSchema() {
+        return parent::getFieldSchema() + [
             'website' => [
                 'type' => Type::string(),
                 'resolve' => function($post) {
-                    return get_field('website',$post->ID);
+                    return get_post_meta($post->ID,'website',true);
                 },
             ],
             'image' => [
-                'type' => new ACFImage([
-                    'name'=>'image'
-                ]),
+                'type' => Attachment::getInstance(),
                 'resolve' => function($post) {
-                    return get_field('image',$post->ID);
+                    $attachment_id = get_post_meta($post->ID,'image',true);
+                    return $attachment_id ? get_post($attachment_id) : null;
                 },
-            ],
-            'news' => [
-                'type' => function() {
-                    return new ListOfType(Schema::getPostType());
-                },
-                'resolve' => function($post) {
-                    return get_posts([
-                        'connected_type' => self::CONNECTION_NEWS,
-                        'connected_items' => $post,
-                        'nopaging' => true,
-                        'suppress_filters' => false
-                    ]) ?: [];
-                }
-            ],
-            'downloads' => [
-                'type' => new ListOfType( new ObjectType([
-                    'name' => 'Downloads',
-                    'fields' => [
-                        'file' => [
-                            'type' => new ACFFile(['name'=>'File']),
-                            'resolve' => function($fieldset) {
-                                return $fieldset['file'];
-                            }
-                        ]
-                    ]
-                ])),
-                'resolve' => function($post) {
-                    return get_field('downloads',$post->ID) ?: [];
-                }
-            ])),
-                'resolve' => function($post) {
-                    return static::getTourDates($post);
-                }
             ]
-        ]
-    ];
-    return $types;
+        ];
+    }
 }
 
-},10);
+add_filter('graphql-wp/get_post_types', function($types){
+    return $types + [
+        'foo' => new Foo
+    ];
+});
 ```
