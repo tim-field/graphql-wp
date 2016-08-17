@@ -55,7 +55,7 @@ class WCProduct extends WPInterfaceType {
             'description' => [
               'type' => Type::string(),
               'resolve' => function($product) {
-                return $product->get_post_data()->post_content;
+                return wpautop( do_shortcode( $product->get_post_data()->post_content ) );
               }
             ],
             'terms' => [
