@@ -52,6 +52,12 @@ class WCProduct extends WPInterfaceType {
                     return $product->get_price();
                 }
             ],
+            'description' => [
+              'type' => Type::string(),
+              'resolve' => function($product) {
+                return $product->get_post_data()->post_content;
+              }
+            ],
             'terms' => [
                 'type' => new ListOfType(WPTerm::getInstance()),
                 'description' => 'Terms ( Categories, Tags etc ) or this product',
