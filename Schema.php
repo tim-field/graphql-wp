@@ -16,18 +16,25 @@ class Schema
     static protected $nodeDefinition = null;
 
     static function build() {
-        static::init();
+        //static::init();
         return new \GraphQL\Schema(static::getQuery());
     }
 
-    static function init() {
-        //WPPost::init();
-        WPTerm::init();
-        /*if (static::withWooCommerce()) {
-            WCProduct::init();
-            //WCOrder::init();
-        }*/
-        do_action('graphql-wp/schema_init');
+    static function getType($name=null) {
+        if (null === self::$internalTypes) {
+            self::$internalTypes = apply_filters('graphql-wp/get_post_types',[
+                'post' => new Post(),
+                'page' => new Page(),
+                'attachment' => new Attachment(),
+                'product' => new Product(),
+                ])
+                + apply_filters('graphql-wp/get_term_types',[
+                    'category' => new Category,
+                    'tag' => new Tag,
+                    'post_format' => new PostFormat
+                ]);
+            }
+        return $name ? self::$internalTypes[$name] : self::$internalTypes;
     }
 
     static function withWooCommerce() {

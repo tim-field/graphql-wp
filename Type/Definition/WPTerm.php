@@ -13,14 +13,6 @@ class WPTerm extends WPInterfaceType {
 
     private static $internalTypes;
 
-    static function init() {
-        static::$internalTypes = apply_filters('graphql-wp/get_post_types',[
-            'category' => new Category,
-            'tag' => new Tag,
-            'post_format' => new PostFormat
-        ]);
-    }
-
     static function resolveType($obj) {
         if($obj instanceOf \WP_Term){
             return isset(self::$internalTypes[$obj->taxonomy]) ? self::$instances[$obj->taxonomy] : self::$instances[self::DEFAULT_TYPE];

@@ -187,7 +187,7 @@ class WCProduct extends WPInterfaceType {
 
                     return get_posts(['post__in'=>$attachment_ids]);
                 }
-            ],
+            ] + WPPost::getFieldSchema(),
 		];
     }
 
