@@ -11,10 +11,10 @@ class WPTerm extends WPInterfaceType {
     const TYPE = 'WP_Term';
     const DEFAULT_TYPE = 'category';
 
-    static $instances;
+    private static $internalTypes;
 
     static function init() {
-        static::$instances = apply_filters('graphql-wp/get_post_types',[
+        static::$internalTypes = apply_filters('graphql-wp/get_post_types',[
             'category' => new Category,
             'tag' => new Tag,
             'post_format' => new PostFormat
@@ -23,8 +23,19 @@ class WPTerm extends WPInterfaceType {
 
     static function resolveType($obj) {
         if($obj instanceOf \WP_Term){
-            return isset(static::$instances[$obj->taxonomy]) ? static::$instances[$obj->taxonomy] : static::$instances[self::DEFAULT_TYPE];
+            return isset(self::$internalTypes[$obj->taxonomy]) ? self::$instances[$obj->taxonomy] : self::$instances[self::DEFAULT_TYPE];
         }
+    }
+
+    static function getType($name = null) {
+        if (null === self::$internalTypes) {
+            self::$internalTypes = apply_filters('graphql-wp/get_term_types',[
+                'category' => new Category,
+                'tag' => new Tag,
+                'post_format' => new PostFormat
+            ]);
+        }
+        return $name ? self::$internalTypes[$name] : self::$internalTypes;
     }
 
     static function getDescription() {

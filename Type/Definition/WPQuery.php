@@ -60,38 +60,7 @@ class WPQuery extends WPObjectType {
             ]
         ];
 
-        if(Schema::withWooCommerce()) {
-
-            $schema['products'] = [
-                'type' => new ListOfType(WCProduct::getInstance()),
-                'args' => static::getWCQueryParams(),
-                'resolve' => function($root, $args) {
-
-                    if(isset($args['category_name'])){
-                        $args['tax_query'] = [
-                            [
-                                'taxonomy' => 'product_cat',
-                                'field' => 'slug',
-                                'terms' => $args['category_name']
-                            ]
-                        ];
-                        unset($args['category_name']);
-                    }
-
-                    $posts = $args ? get_posts($args) : $root->posts;
-
-                    return array_map( function($post) {
-                        return wc_get_product($post);
-                    }, $posts);
-                }
-            ];
-        }
-        
         return $schema;
-    }
-
-    static function getWCQueryParams() {
-        return static::getWPQueryParams();
     }
 
     static function getWPQueryParams() {

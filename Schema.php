@@ -8,7 +8,7 @@ use GraphQLRelay\Relay;
 use Mohiohio\GraphQLWP\Type\Definition\WPQuery;
 use Mohiohio\GraphQLWP\Type\Definition\WPPost;
 use Mohiohio\GraphQLWP\Type\Definition\WPTerm;
-use Mohiohio\GraphQLWP\Type\Definition\WCProduct;
+//use Mohiohio\GraphQLWP\Type\Definition\WCProduct;
 
 class Schema
 {
@@ -21,11 +21,12 @@ class Schema
     }
 
     static function init() {
-        WPPost::init();
+        //WPPost::init();
         WPTerm::init();
-        if (static::withWooCommerce()) {
+        /*if (static::withWooCommerce()) {
             WCProduct::init();
-        }
+            //WCOrder::init();
+        }*/
         do_action('graphql-wp/schema_init');
     }
 

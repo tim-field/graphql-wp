@@ -29,33 +29,44 @@ class WCProduct extends WPInterfaceType {
         return 'A WooCommerce Product';
     }
 
+    static function toProduct(\WC_Post $post) {
+        static $products = [];
+
+        return isset($products[$post->ID]) ? $products[$post->ID] : $products[$post->ID] = wc_get_product($post);
+    }
+
     static function getFieldSchema() {
         return [
-            'id' => Relay::globalIdField(self::TYPE, function($product){
+            'id' => Relay::globalIdField(self::TYPE, function($post){
+                $product = static::toProduct($post);
                 return $product->is_type( 'variation' ) ? $product->get_variation_id() : $product->id;
             }),
             'ID' => [
                 'type' => Type::nonNull(Type::string()),
-                'resolve' => function($product) {
+                'resolve' => function($post) {
+                    $product = static::toProduct($post);
                     return (int) $product->is_type( 'variation' ) ? $product->get_variation_id() : $product->id;
                 }
             ],
             'name' => [
-                'type' => Type::nonNull(Type::string()),
-                'resolve' => function($product) {
+                'type' => Type::string(),
+                'resolve' => function($post) {
+                    $product = static::toProduct($post);
                     return $product->get_title();
                 }
             ],
             'price' => [
                 'type' => Type::string(),
-                'resolve' => function($product) {
+                'resolve' => function($post) {
+                    $product = static::toProduct($post);
                     return $product->get_price();
                 }
             ],
             'description' => [
               'type' => Type::string(),
-              'resolve' => function($product) {
-                return wpautop( do_shortcode( $product->get_post_data()->post_content ) );
+              'resolve' => function($post) {
+                  $product = static::toProduct($post);
+                  return wpautop( do_shortcode( $product->get_post_data()->post_content ) );
               }
             ],
             'terms' => [
@@ -67,19 +78,21 @@ class WCProduct extends WPInterfaceType {
                         'type' => Type::string(),
                     ]
                 ],
-                'resolve' => function($product, $args) {
+                'resolve' => function($post, $args) {
 
                     $args += ['taxonomy' => 'cat'];
                     extract($args);
 
-                    $res = wp_get_post_terms($product->id, 'product_'.$taxonomy);
+                    $res = wp_get_post_terms($post->ID, 'product_'.$taxonomy);
 
                     return is_wp_error($res) ? [] : $res;
                 }
             ],
             'attributes' => [
                 'type' => new ListOfType(ProductAttribute::getInstance()),
-                'resolve' => function($product) {
+                'resolve' => function($post) {
+
+                    $product = static::toProduct($post);
                     $attributes = [];
 
                     if ( $product->is_type( 'variation' ) ) {
@@ -134,7 +147,10 @@ class WCProduct extends WPInterfaceType {
                 'type' => function() {
                     return new ListOfType(static::getInstance());
                 },
-                'resolve' => function($product) {
+                'resolve' => function($post) {
+
+                    $product = static::toProduct($post);
+
                     if ( $product->is_type( 'variable' ) && $product->has_child() ) {
                         return array_filter(array_map(function($child_id) use ($product) {
                             $variation = $product->get_child( $child_id );
@@ -148,7 +164,9 @@ class WCProduct extends WPInterfaceType {
                 'type' => function(){
                     return new ListOfType(Attachment::getInstance());
                 },
-                'resolve' => function($product) {
+                'resolve' => function($post) {
+
+                    $product = static::toProduct($post);
 
                     if ( $product->is_type( 'variation' ) ) {
                         if ( has_post_thumbnail( $product->get_variation_id() ) ) {

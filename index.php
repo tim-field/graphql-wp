@@ -30,7 +30,6 @@ Router::routes([
         if ($contentTypeIsJson) {
             $rawBody = file_get_contents('php://input');
 
-            log('rawBody', $rawBody);
             try {
               $data = json_decode($rawBody, true);
             } catch (\Exception $exception) {
@@ -41,7 +40,6 @@ Router::routes([
             if (strlen($rawBody) > 0 && null === $data) {
                 jsonResponse(['errors' => ['message' => 'Decoding body failed. Be sure to send valid json request. Check for line feeds in json (replace them with "\n" or remove them)']]);
             }
-            log('raw data ' , var_export($data, true) );
         } else {
             $data = $_POST;
         }
@@ -53,8 +51,6 @@ Router::routes([
                 $data['variables'] :
                 json_decode($data['variables'],true) ) :
             null;
-        log('post', $_POST);
-        log('data', $data);
 
         if($requestString) {
             try {
@@ -74,7 +70,7 @@ Router::routes([
                     ]
                 ];
             }
-            log('result', $result);
+            //log('result', $result);
             jsonResponse($result);
         }
         jsonResponse(['errors' => ['message' => 'Wrong query format or empty query. Either send raw query _with_ Content-Type: \'application/json\' header or send query by posting www-form-data with a query="query{}..." parameter']]);
@@ -103,7 +99,7 @@ function jsonResponse(array $resp) {
  * @return [type]          [description]
  */
 function log($message)  {
-    if (true || !WP_DEBUG) {
+    if (!WP_DEBUG) {
       return;
     }
     $function_args = func_get_args();

@@ -11,19 +11,24 @@ class WPPost extends WPInterfaceType {
     const TYPE = 'WP_Post';
     const DEFAULT_TYPE = 'post';
 
-    static $instances;
-
-    static function init() {
-        static::$instances = apply_filters('graphql-wp/get_post_types',[
-            'post' => new Post,
-            'page' => new Page,
-        ]);
-    }
+    private static $internalTypes;
 
     static function resolveType($obj) {
         if($obj instanceOf \WP_Post){
-            return isset(static::$instances[$obj->post_type]) ? static::$instances[$obj->post_type] : static::$instances[self::DEFAULT_TYPE];
+            return isset(self::$internalTypes[$obj->post_type]) ? self::$internalTypes[$obj->post_type] : self::$internalTypes[self::DEFAULT_TYPE];
         }
+    }
+
+    static function getType($name = null) {
+        if (null === self::$internalTypes) {
+            self::$internalTypes = apply_filters('graphql-wp/get_post_types',[
+                'post' => new Post(),
+                'page' => new Page(),
+                'attachment' => new Attachment(),
+                'product' => new Product(),
+            ]);
+        }
+        return $name ? self::$internalTypes[$name] : self::$internalTypes;
     }
 
     static function getDescription() {
@@ -206,6 +211,18 @@ class WPPost extends WPInterfaceType {
                     $res = wp_get_post_terms($post->ID, $taxonomy, ['orderby'=>$orderby,'order'=>$order]);
 
                     return is_wp_error($res) ? [] : $res;
+                }
+            ],
+            'meta_value' => [
+                'type' => Type::string(),
+                'args' => [
+                    'key' => [
+                        'description' => 'Post meta key',
+                        'type' => Type::nonNull(Type::string()),
+                    ]
+                ],
+                'resolve' => function($post, $args) {
+                    return get_post_meta($post->ID,$args['key'],true);
                 }
             ]
         ];
