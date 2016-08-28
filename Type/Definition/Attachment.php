@@ -6,6 +6,8 @@ use GraphQL\Type\Definition\Type;
 
 class Attachment extends Post {
 
+    const POST_TYPE = 'attachment';
+
     static function getFieldSchema() {
 
         return [

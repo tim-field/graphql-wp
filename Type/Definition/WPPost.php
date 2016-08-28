@@ -6,12 +6,22 @@ use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Definition\ListOfType;
 use GraphQLRelay\Relay;
 
+//TODO getTypes should move to parent class and define a getTypes abstract method
 class WPPost extends WPInterfaceType {
 
     const TYPE = 'WP_Post';
     const DEFAULT_TYPE = 'post';
 
     private static $internalTypes;
+    private static $instance;
+
+    static function getInstance($config=[]) {
+        return static::$instance ?: static::$instance = new static($config);
+    }
+
+    static function init() {
+        static::getTypes();
+    }
 
     static function resolveType($obj) {
         if($obj instanceOf \WP_Post){
@@ -19,13 +29,13 @@ class WPPost extends WPInterfaceType {
         }
     }
 
-    static function getType($name = null) {
+    static function getTypes($name = null) {
         if (null === self::$internalTypes) {
-            self::$internalTypes = apply_filters('graphql-wp/get_post_types',[
-                'post' => new Post(),
-                'page' => new Page(),
-                'attachment' => new Attachment(),
-                'product' => new Product(),
+            self::$internalTypes = apply_filters('graphql-wp/get_post_types',[ //TODO move to parent
+                Post::POST_TYPE => new Post(),
+                Page::POST_TYPE => new Page(),
+                Attachment::POST_TYPE => new Attachment(),
+                Product::POST_TYPE => new Product(),
             ]);
         }
         return $name ? self::$internalTypes[$name] : self::$internalTypes;

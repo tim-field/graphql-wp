@@ -6,6 +6,12 @@ use GraphQL\Type\Definition\Type;
 
 class ImageSrc extends WPObjectType {
 
+    private static $instance;
+
+    static function getInstance($config=[]) {
+        return static::$instance ?: static::$instance = new static($config);
+    }
+
     static function getFieldSchema() {
 
         return [

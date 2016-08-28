@@ -16,30 +16,30 @@ class Schema
     static protected $nodeDefinition = null;
 
     static function build() {
-        //static::init();
+        static::init();
         return new \GraphQL\Schema(static::getQuery());
     }
 
-    static function getType($name=null) {
-        if (null === self::$internalTypes) {
-            self::$internalTypes = apply_filters('graphql-wp/get_post_types',[
-                'post' => new Post(),
-                'page' => new Page(),
-                'attachment' => new Attachment(),
-                'product' => new Product(),
-                ])
-                + apply_filters('graphql-wp/get_term_types',[
-                    'category' => new Category,
-                    'tag' => new Tag,
-                    'post_format' => new PostFormat
-                ]);
-            }
-        return $name ? self::$internalTypes[$name] : self::$internalTypes;
+    static function init() {
+        WPPost::init();
+        WPTerm::init();
+        do_action('graphql-wp/schema_init');
     }
 
     static function withWooCommerce() {
         return (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins',get_option( 'active_plugins' ))));
     }
+
+    /*static function getType($name=null) {
+        if (null === self::$internalTypes) {
+            self::$internalTypes =
+            [
+                WPTerm::TYPE => new WPTerm,
+                WPPost::TYPE => new WPPost,
+            ];
+        }
+        return $name ? self::$internalTypes[$name] : self::$internalTypes;
+    }*/
 
     //TODO needs to be automated
     static function getNodeDefinition() {
@@ -60,7 +60,7 @@ class Schema
         },
         function($obj) {
 
-            if ($obj instanceOf \WP_Post ) {
+            if ($obj instanceOf \WP_Post) {
                 return WPPost::resolveType($obj);
             }
             if ($obj instanceOf \WP_Term) {

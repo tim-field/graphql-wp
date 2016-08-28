@@ -8,6 +8,12 @@ use Mohiohio\GraphQLWP\Schema;
 
 class WPQuery extends WPObjectType {
 
+    private static $instance;
+
+    static function getInstance($config=[]) {
+        return static::$instance ?: static::$instance = new static($config);
+    }
+
     static function getDescription() {
         return 'deals with the intricacies of a post request on a WordPress blog';
     }
@@ -18,6 +24,7 @@ class WPQuery extends WPObjectType {
                 'type' => new ListOfType(WPPost::getInstance()),
                 'args' => static::getWPQueryParams(),
                 'resolve' => function($root, $args) {
+
                     return $args ? get_posts($args) : $root->posts;
                 }
             ],
@@ -60,7 +67,48 @@ class WPQuery extends WPObjectType {
             ]
         ];
 
+        if(Schema::withWooCommerce()) {
+            $schema['products'] = [
+                'type' => new ListOfType(Product::getInstance()),
+                'args' => static::getWCQueryParams(),
+                'resolve' => function($root, $args) {
+
+                    if(!isset($args['post_type'])) {
+                        $args['post_type'] = 'product';
+                    }
+
+                    if(isset($args['category_name'])){
+                        $args['tax_query'] = [
+                            [
+                                'taxonomy' => 'product_cat',
+                                'field' => 'slug',
+                                'terms' => $args['category_name']
+                            ]
+                        ];
+                        unset($args['category_name']);
+                    }
+
+                    \Mohiohio\GraphQLWP\log('have args', $args);
+
+                    return get_posts($args);
+                }
+            ];
+        }
+
         return $schema;
+    }
+
+    static function getWCQueryParams() {
+        return [
+            'post_type' => [
+                'description' => "Retrieves posts by Post Types, default value is 'product'.",
+                'type' => new ListOfType(Type::string()),
+            ],
+            'category_name' => [
+                'description' => "Show in this product category slug",
+                'type' => Type::string()
+            ]
+        ] + static::getWPQueryParams();
     }
 
     static function getWPQueryParams() {

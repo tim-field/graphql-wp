@@ -8,11 +8,13 @@ use GraphQLRelay\Relay;
 
 class Product extends Post {
 
+    const POST_TYPE = 'product';
+
     static function getDescription() {
         return 'The WooCommerce product class handles individual product data.';
     }
 
-    static function toProduct(\WC_Post $post) {
+    static function toProduct(\WP_Post $post) {
         static $products = [];
 
         return isset($products[$post->ID]) ? $products[$post->ID] : $products[$post->ID] = wc_get_product($post);
@@ -133,7 +135,7 @@ class Product extends Post {
             'variations' => [
                 'type' => function() {
                     //return new ListOfType(Product::getInstance());
-                    return new ListOfType(WPPost::getInstance());
+                    return new ListOfType(Product::getInstance());
                 },
                 'resolve' => function($post) {
 
@@ -142,7 +144,7 @@ class Product extends Post {
                     if ( $product->is_type( 'variable' ) && $product->has_child() ) {
                         return array_filter(array_map(function($child_id) use ($product) {
                             $variation = $product->get_child( $child_id );
-                            return $variation->exists() ? $variation : null;
+                            return $variation->exists() ? $variation->post : null;
                         },$product->get_children()));
                     }
                     return [];
@@ -155,6 +157,7 @@ class Product extends Post {
                 'resolve' => function($post) {
 
                     $product = static::toProduct($post);
+                    $attachment_ids = [];
 
                     if ( $product->is_type( 'variation' ) ) {
                         if ( has_post_thumbnail( $product->get_variation_id() ) ) {

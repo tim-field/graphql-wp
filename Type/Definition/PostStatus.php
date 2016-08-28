@@ -6,7 +6,11 @@ use \GraphQL\Type\Definition\EnumType;
 
 class PostStatus extends EnumType {
 
-    use Instance;
+    private static $instance;
+
+    static function getInstance($config=[]) {
+        return static::$instance ?: static::$instance = new static($config);
+    }
 
     function __construct($config=[]) {
         parent::__construct(static::getSchema($config));
