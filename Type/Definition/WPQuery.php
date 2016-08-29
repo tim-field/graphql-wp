@@ -68,9 +68,19 @@ class WPQuery extends WPObjectType {
         ];
 
         if(Schema::withWooCommerce()) {
+
             $schema['products'] = [
                 'type' => new ListOfType(Product::getInstance()),
-                'args' => static::getWCQueryParams(),
+                'args' => static::extendArgs([
+                    'post_type' => [
+                        'description' => "Retrieves posts by Post Types, default value is 'product'.",
+                        'type' => new ListOfType(Type::string()),
+                    ],
+                    'category_name' => [
+                        'description' => "Show in this product category slug",
+                        'type' => Type::string()
+                    ]
+                ]),
                 'resolve' => function($root, $args) {
 
                     if(!isset($args['post_type'])) {
@@ -88,7 +98,37 @@ class WPQuery extends WPObjectType {
                         unset($args['category_name']);
                     }
 
-                    \Mohiohio\GraphQLWP\log('have args', $args);
+                    return get_posts($args);
+                }
+            ];
+
+            $schema['orders'] = [
+                'type' => new ListOfType(Order::getInstance()),
+                'args' => static::extendArgs([
+                    'post_type' => [
+                        'description' => "Retrieves posts by Post Types, default value is 'shop_order'.",
+                        'type' => new ListOfType(Type::string()),
+                    ]
+                ]),
+                'resolve' => function($root, $args) {
+
+                    if(!isset($args['post_type'])) {
+                        $args['post_type'] = 'shop_order';
+                    }
+
+                    if(!isset($args['post_status'])) {
+                        $args['post_status'] = array_keys(wc_get_order_statuses());
+                    }
+
+                    if(!is_super_admin()){
+                        $args['meta_query'][] = [
+                            'key' => '_customer_user',
+                            'value' => get_current_user_id(),
+                        ];
+                    }
+
+                    \Mohiohio\GraphQLWP\Log('with params',$args);
+                    \Mohiohio\GraphQLWP\Log('current user id ',get_current_user_id());
 
                     return get_posts($args);
                 }
@@ -98,17 +138,8 @@ class WPQuery extends WPObjectType {
         return $schema;
     }
 
-    static function getWCQueryParams() {
-        return [
-            'post_type' => [
-                'description' => "Retrieves posts by Post Types, default value is 'product'.",
-                'type' => new ListOfType(Type::string()),
-            ],
-            'category_name' => [
-                'description' => "Show in this product category slug",
-                'type' => Type::string()
-            ]
-        ] + static::getWPQueryParams();
+    static function extendArgs($args) {
+        return $args + static::getWPQueryParams();
     }
 
     static function getWPQueryParams() {
@@ -124,7 +155,11 @@ class WPQuery extends WPObjectType {
             ],
             'post_type' => [
                 'description' => "Retrieves posts by Post Types, default value is 'post'.",
-                'type' => new ListOfType(Type::string()),
+                'type' => new ListOfType(Type::string())
+            ],
+            'post_status' => [
+                'description' => "Default value is 'publish', but if the user is logged in, 'private' is added",
+                'type' => new ListOfType(Type::string()) // choosing to keep this as a string instead of Enum to ensure custom post status aren't extra work here.
             ],
             'name' => [
                 'description' => "Retrieves post by name",
@@ -157,7 +192,7 @@ class WPQuery extends WPObjectType {
             'tag_id' => [
                 'description' => "Show in this tag id",
                 'type' => Type::int()
-            ]
+            ],
         ];
     }
 

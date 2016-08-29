@@ -4,9 +4,11 @@ namespace Mohiohio\GraphQLWP\Type\Definition;
 
 use GraphQL\Type\Definition\Type;
 
-class Attachment extends Post {
+class Attachment extends PostType {
 
-    const POST_TYPE = 'attachment';
+    static function getPostType() {
+        return 'attachment';
+    }
 
     static function getFieldSchema() {
 

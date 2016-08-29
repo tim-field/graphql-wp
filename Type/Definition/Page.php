@@ -2,9 +2,11 @@
 
 namespace Mohiohio\GraphQLWP\Type\Definition;
 
-class Page extends Post {
+class Page extends PostType {
 
-    const POST_TYPE = 'page';
+    static function getPostType() {
+        return 'page';
+    }
 
     static function getDescription() {
         return 'A standard WordPress page';

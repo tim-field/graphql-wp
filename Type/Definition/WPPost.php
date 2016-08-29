@@ -32,10 +32,11 @@ class WPPost extends WPInterfaceType {
     static function getTypes($name = null) {
         if (null === self::$internalTypes) {
             self::$internalTypes = apply_filters('graphql-wp/get_post_types',[ //TODO move to parent
-                Post::POST_TYPE => new Post(),
-                Page::POST_TYPE => new Page(),
-                Attachment::POST_TYPE => new Attachment(),
-                Product::POST_TYPE => new Product(),
+                Post::getPostType() => new Post(),
+                Page::getPostType() => new Page(),
+                Attachment::getPostType() => new Attachment(),
+                Product::getPostType() => new Product(),
+                Order::getPostType() => new Order()
             ]);
         }
         return $name ? self::$internalTypes[$name] : self::$internalTypes;

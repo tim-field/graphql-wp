@@ -6,16 +6,24 @@ use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Definition\ListOfType;
 use GraphQLRelay\Relay;
 
-class Product extends Post {
-
-    const POST_TYPE = 'product';
+class Product extends PostType {
 
     static function getDescription() {
         return 'The WooCommerce product class handles individual product data.';
     }
 
-    static function toProduct(\WP_Post $post) {
+    static function getPostType() {
+        return 'product';
+    }
+
+    static function toProduct($post) {
+
         static $products = [];
+
+        if($post instanceof \WC_Product ) {
+            //Already a product, leave as is
+            return $post;
+        }
 
         return isset($products[$post->ID]) ? $products[$post->ID] : $products[$post->ID] = wc_get_product($post);
     }
@@ -144,7 +152,7 @@ class Product extends Post {
                     if ( $product->is_type( 'variable' ) && $product->has_child() ) {
                         return array_filter(array_map(function($child_id) use ($product) {
                             $variation = $product->get_child( $child_id );
-                            return $variation->exists() ? $variation->post : null;
+                            return $variation->exists() ? $variation : null;
                         },$product->get_children()));
                     }
                     return [];
