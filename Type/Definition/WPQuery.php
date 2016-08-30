@@ -108,27 +108,36 @@ class WPQuery extends WPObjectType {
                     'post_type' => [
                         'description' => "Retrieves posts by Post Types, default value is 'shop_order'.",
                         'type' => new ListOfType(Type::string()),
+                    ],
+                    'order_status' => [
+                        'description' => "Status of the order, see wc_get_order_statuses()",
+                        'type' => new ListOfType(Type::string()),
                     ]
                 ]),
                 'resolve' => function($root, $args) {
+
+                    if(!is_user_logged_in()){
+                        return [];
+                    }
 
                     if(!isset($args['post_type'])) {
                         $args['post_type'] = 'shop_order';
                     }
 
+                    if(isset($args['order_status'])) {
+                        $args['post_status'] = 'wc-'.$args['order_status'];
+                    }
+
                     if(!isset($args['post_status'])) {
-                        $args['post_status'] = array_keys(wc_get_order_statuses());
+                        $args['post_status'] = 'any';
                     }
 
-                    if(!is_super_admin()){
-                        $args['meta_query'][] = [
-                            'key' => '_customer_user',
-                            'value' => get_current_user_id(),
-                        ];
-                    }
-
-                    \Mohiohio\GraphQLWP\Log('with params',$args);
-                    \Mohiohio\GraphQLWP\Log('current user id ',get_current_user_id());
+                    //if(!is_super_admin()){ //TODO
+                    $args['meta_query'][] = [
+                        'key' => '_customer_user',
+                        'value' => get_current_user_id(),
+                    ];
+                    //}
 
                     return get_posts($args);
                 }
