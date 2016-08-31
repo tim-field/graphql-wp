@@ -47,7 +47,8 @@ class WPPost extends WPInterfaceType {
     }
 
     static function getFieldSchema() {
-        return [
+        static $schema;
+        return $schema ?: $schema = [
             'id' => Relay::globalIdField(self::TYPE, function($post){
                 return $post->ID;
             }),
