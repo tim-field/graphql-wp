@@ -8,7 +8,6 @@ use GraphQLRelay\Relay;
 use Mohiohio\GraphQLWP\Type\Definition\WPQuery;
 use Mohiohio\GraphQLWP\Type\Definition\WPPost;
 use Mohiohio\GraphQLWP\Type\Definition\WPTerm;
-//use Mohiohio\GraphQLWP\Type\Definition\WCProduct;
 
 class Schema
 {
@@ -30,18 +29,6 @@ class Schema
         return (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins',get_option( 'active_plugins' ))));
     }
 
-    /*static function getType($name=null) {
-        if (null === self::$internalTypes) {
-            self::$internalTypes =
-            [
-                WPTerm::TYPE => new WPTerm,
-                WPPost::TYPE => new WPPost,
-            ];
-        }
-        return $name ? self::$internalTypes[$name] : self::$internalTypes;
-    }*/
-
-    //TODO needs to be automated
     static function getNodeDefinition() {
 
         return static::$nodeDefinition ?: static::$nodeDefinition = Relay::nodeDefinitions(
