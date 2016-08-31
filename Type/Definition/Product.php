@@ -184,7 +184,7 @@ class Product extends PostType {
                         $attachment_ids = array_merge( $attachment_ids, $product->get_gallery_attachment_ids() );
                     }
 
-                    return get_posts(['post__in'=>$attachment_ids]);
+                    return get_posts(['post__in'=>$attachment_ids,'post_type'=>'attachment']);
                 }
             ]
 		] + parent::getFieldSchema();
