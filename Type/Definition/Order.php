@@ -3,6 +3,7 @@
 namespace Mohiohio\GraphQLWP\Type\Definition;
 
 use GraphQL\Type\Definition\ListOfType;
+use GraphQL\Type\Definition\Type;
 
 class Order extends PostType {
 
@@ -36,7 +37,13 @@ class Order extends PostType {
                         return static::resolveLineItem($item_id, $item, $order);
                     }, array_keys($orderItems), $orderItems);
                 }
-            ]
+            ],
+            'total' => [
+                'type' => Type::string(),
+                'resolve' => function($post) {
+                    $order = static::toOrder($post);
+                    return $order->get_total();
+                }],
         ] + parent::getFieldSchema();
     }
 
