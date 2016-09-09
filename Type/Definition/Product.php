@@ -186,6 +186,13 @@ class Product extends PostType {
 
                     return get_posts(['post__in'=>$attachment_ids,'post_type'=>'attachment']);
                 }
+            ],
+            'type' => [
+                'type'=> Type::string(),
+                'resolve'=> function($post) {
+                    $product = static::toProduct($post);
+                    return $product->get_type();
+                }
             ]
 		] + parent::getFieldSchema();
     }
