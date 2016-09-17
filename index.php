@@ -6,7 +6,7 @@
 * Version: 0.3.0
 * Author: Tim Field
 * Author URI: http://www.mohiohio.com/
-* License: BSD
+* License: GPL-3
 */
 namespace Mohiohio\GraphQLWP;
 
