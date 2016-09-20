@@ -20,6 +20,7 @@ Router::routes([
     ENDPOINT => function() {
 
         header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Headers: content-type');
         header('Content-Type: application/json');
 
         $contentTypeIsJson = (isset($_SERVER['HTTP_CONTENT_TYPE']) && $_SERVER['HTTP_CONTENT_TYPE'] == 'application/json')
