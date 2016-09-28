@@ -10,6 +10,8 @@
 */
 namespace Mohiohio\GraphQLWP;
 
+require_once __DIR__."/../../../vendor/autoload.php";
+
 use GraphQL\GraphQL;
 use Mohiohio\WordPress\Router;
 
