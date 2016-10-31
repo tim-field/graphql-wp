@@ -8,6 +8,15 @@ use GraphQLRelay\Relay;
 use Mohiohio\GraphQLWP\Type\Definition\WPQuery;
 use Mohiohio\GraphQLWP\Type\Definition\WPPost;
 use Mohiohio\GraphQLWP\Type\Definition\WPTerm;
+use Mohiohio\GraphQLWP\Type\Definition\Post;
+use Mohiohio\GraphQLWP\Type\Definition\Page;
+use Mohiohio\GraphQLWP\Type\Definition\Attachment;
+use Mohiohio\GraphQLWP\Type\Definition\Product;
+use Mohiohio\GraphQLWP\Type\Definition\Order;
+use Mohiohio\GraphQLWP\Type\Definition\Category;
+use Mohiohio\GraphQLWP\Type\Definition\Tag;
+use Mohiohio\GraphQLWP\Type\Definition\PostFormat;
+
 
 class Schema
 {
@@ -16,7 +25,11 @@ class Schema
 
     static function build() {
         static::init();
-        return new \GraphQL\Schema(['query' => static::getQuery()]);
+        return new \GraphQL\Schema([
+            'query' => static::getQuery(),
+            'types' => [Post::getInstance(), Page::getInstance(), Attachment::getInstance(), Product::getInstance(),
+                        Order::getInstance(), Category::getInstance(), Tag::getInstance(), PostFormat::getInstance()]
+        ]);
     }
 
     static function init() {
