@@ -16,7 +16,7 @@ class Schema
 
     static function build() {
         static::init();
-        return new \GraphQL\Schema(static::getQuery());
+        return new \GraphQL\Schema(['query' => static::getQuery()]);
     }
 
     static function init() {
