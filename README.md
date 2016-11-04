@@ -21,6 +21,8 @@ Assuming you have something like this in your composer.json file ( so it knows t
     },
 ```
 
+If your aren't familar with using composer with WordPress I'd recommend using a setup like [bedrock](https://roots.io/bedrock/). Otherwise you will at the least need to [require autoload.php](https://getcomposer.org/doc/01-basic-usage.md#autoloading) for this to work.
+
 
 ##Using
 
