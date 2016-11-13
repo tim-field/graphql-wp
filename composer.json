@@ -12,7 +12,7 @@
   "require": {
     "php": ">=5.6",
     "mohiohio/wordpress-lib": "^0.1",
-    "webonyx/graphql-php": "^v0.7.2",
+    "webonyx/graphql-php": "^v0.6",
     "ivome/graphql-relay-php": "^0.1.2",
     "danielstjules/stringy": "^2.3"
   },
