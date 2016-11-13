@@ -24,6 +24,13 @@ class MenuItem extends WPObjectType {
                 'type' => Type::string(),
                 'description' => 'Unique id for menu item',
                 'resolve' => function($item) {
+                    return $item->ID;
+                }
+            ],
+            'objectId' => [
+                'type' => Type::string(),
+                'description' => 'Unique object id for menu item',
+                'resolve' => function($item) {
                     return $item->object_id;
                 }
             ],
@@ -67,6 +74,13 @@ class MenuItem extends WPObjectType {
                 'description' => 'CSS class names for this item',
                 'resolve' => function($item) {
                     return $item->classes;
+                }
+            ],
+            'menuItemParent' => [
+                'type' => Type::string(),
+                'description' => 'Parent menu item id',
+                'resolve' => function($item) {
+                    return $item->menu_item_parent;
                 }
             ]
         ];

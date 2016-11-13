@@ -2,6 +2,8 @@
 
 namespace Mohiohio\GraphQLWP\Type\Definition;
 
+error_reporting(E_ALL & ~E_STRICT & ~E_NOTICE);
+
 use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Definition\ListOfType;
 use GraphQLRelay\Relay;
