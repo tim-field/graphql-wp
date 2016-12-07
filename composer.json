@@ -9,10 +9,16 @@
       "email": "field.tim@gmail.com"
     }
   ],
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/rocket-monkey/graphql-php.git"
+    }
+  ],
   "require": {
     "php": ">=5.6",
     "mohiohio/wordpress-lib": "^0.1",
-    "webonyx/graphql-php": "^v0.6",
+    "webonyx/graphql-php": "dev-locations-patch",
     "ivome/graphql-relay-php": "^0.1.2",
     "danielstjules/stringy": "^2.3"
   },
