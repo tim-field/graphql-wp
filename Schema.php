@@ -16,7 +16,11 @@ class Schema
 
     static function build() {
         static::init();
-        return new \GraphQL\Schema(static::getQuery());
+        return new \GraphQL\Schema([
+          'query' => static::getQuery(),
+          'mutation' => null,
+          'types' => static::getArrayOfTypesWithInterfaces()
+        ]);
     }
 
     static function init() {
@@ -54,6 +58,11 @@ class Schema
                 return WPTerm::resolveType($obj);
             }
         });
+    }
+
+    static function getArrayOfTypesWithInterfaces() {
+      // see: https://github.com/webonyx/graphql-php/blob/master/UPGRADE.md
+      return [];
     }
 
     static function getQuery() {

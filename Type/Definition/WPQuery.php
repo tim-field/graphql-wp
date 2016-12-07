@@ -21,7 +21,7 @@ class WPQuery extends WPObjectType {
     static function getFieldSchema() {
         $schema = [
             'posts' => [
-                'type' => new ListOfType(WPPost::getInstance()),
+                'type' => new ListOfType(Post::getInstance()),
                 'args' => static::getWPQueryParams(),
                 'resolve' => function($root, $args) {
 

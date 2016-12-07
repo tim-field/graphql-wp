@@ -45,6 +45,7 @@ Router::routes([
             $data = $_POST;
         }
 
+        $context = null;
         $requestString = isset($data['query']) ? $data['query'] : null;
         $operationName = isset($data['operation']) ? $data['operation'] : null;
         $variableValues = isset($data['variables']) ?
@@ -61,6 +62,7 @@ Router::routes([
                     $schema,
                     $requestString,
                     /* $rootValue */ null,
+                    $context,
                     $variableValues,
                     $operationName
                 );
