@@ -118,8 +118,17 @@ class WPPost extends WPInterfaceType {
                         if (strpos($value, '<img') !== false) {
                           $type = 'image';
                           $attrArray = current((array) new \SimpleXMLElement($value));
+
+                          $parts = explode('/', $attrArray['src']);
+                          $lastPart = array_pop($parts);
+                          if (strpos($lastPart, '-') !== false) {
+                            $parts = explode('-', $lastPart);
+                          } else if (strpos($lastPart, '.') !== false) {
+                            $parts = explode('.', $lastPart);
+                          }
+
                           $imageMeta = [
-                            'name' => $attrArray['alt'],
+                            'name' => $parts[0],
                             'src' => $attrArray['src'],
                             'classNames' => $attrArray['class']
                           ];
