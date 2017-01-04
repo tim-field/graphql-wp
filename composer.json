@@ -1,5 +1,5 @@
 {
-  "name": "mohiohio/graphql-wp",
+  "name": "rocketmonkey/graphql-wp",
   "description": "A GraphQL endpoint for WordPress",
   "type": "wordpress-plugin",
   "license": "GPL",
@@ -7,6 +7,10 @@
     {
       "name": "Tim Field",
       "email": "field.tim@gmail.com"
+    },
+    {
+      "name": "Remo Vetere",
+      "email": "remo.vetere@gmail.com"
     }
   ],
   "require": {
