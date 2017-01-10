@@ -1,27 +1,31 @@
 {
-    "name": "mohiohio/graphql-wp",
-    "description": "A GraphQL endpoint for WordPress",
-    "type" : "wordpress-plugin",
-    "license": "GPL",
-    "authors": [
-        {
-            "name": "Tim Field",
-            "email": "field.tim@gmail.com"
-        }
-    ],
-    "require": {
-        "php": ">=5.6",
-        "mohiohio/wordpress-lib":"^0.1",
-        "webonyx/graphql-php": "^v0.6",
-        "ivome/graphql-relay-php": "^0.1.2",
-        "danielstjules/stringy": "^2.3"
+  "name": "rocketmonkey/graphql-wp",
+  "description": "A GraphQL endpoint for WordPress",
+  "type": "wordpress-plugin",
+  "license": "GPL",
+  "authors": [
+    {
+      "name": "Tim Field",
+      "email": "field.tim@gmail.com"
     },
-    "autoload": {
-        "psr-4": {
-            "Mohiohio\\GraphQLWP\\":"/"
-        }
-    },
-    "require-dev": {
-        "analog/analog": "^1.0"
+    {
+      "name": "Remo Vetere",
+      "email": "remo.vetere@gmail.com"
     }
+  ],
+  "require": {
+    "php": ">=5.6",
+    "mohiohio/wordpress-lib": "^0.1",
+    "webonyx/graphql-php": "^v0.7.0",
+    "ivome/graphql-relay-php": "^0.3.1",
+    "danielstjules/stringy": "^2.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "Mohiohio\\GraphQLWP\\": "/"
+    }
+  },
+  "require-dev": {
+    "analog/analog": "^1.0"
+  }
 }

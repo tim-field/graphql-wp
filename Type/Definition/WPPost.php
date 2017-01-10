@@ -2,8 +2,11 @@
 
 namespace Mohiohio\GraphQLWP\Type\Definition;
 
+error_reporting(E_ALL & ~E_STRICT & ~E_NOTICE);
+
 use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Definition\ListOfType;
+use GraphQL\Type\Definition\ObjectType;
 use GraphQLRelay\Relay;
 
 //TODO getTypes should move to parent class and define a getTypes abstract method
@@ -47,6 +50,28 @@ class WPPost extends WPInterfaceType {
     }
 
     static function getFieldSchema() {
+        $ImageMeta = new ObjectType([
+          'name' => 'ImageMeta',
+          'isTypeOf' => function() {return true;},
+          'fields' => [
+            'name' => ['type' => Type::string()],
+            'src' => ['type' => Type::string()],
+            'classNames' => ['type' => Type::string()]
+          ],
+          'interfaces' => []
+        ]);
+
+        $BodyParagraphs = new ObjectType([
+          'name' => 'BodyParagraphs',
+          'isTypeOf' => function() {return true;},
+          'fields' => [
+            'type' => ['type' => Type::string()],
+            'content' => ['type' => Type::string()],
+            'imageMeta' => ['type' => $ImageMeta]
+          ],
+          'interfaces' => []
+        ]);
+
         static $schema;
         return $schema ?: $schema = [
             'id' => Relay::globalIdField(self::TYPE, function($post){
@@ -75,6 +100,48 @@ class WPPost extends WPInterfaceType {
                 'description' => 'The full content of the post',
                 'resolve' => function($post) {
                     return apply_filters('the_content', get_post_field('post_content', $post));
+                }
+            ],
+            'body' => [
+                'type' => Type::listOf($BodyParagraphs),
+                'description' => 'The full content of the post',
+                'resolve' => function($post) {
+                    $rawContent = apply_filters('the_content', get_post_field('post_content', $post));
+                    $rawContentFiltered = str_replace('</p>', '', $rawContent);
+                    $array = explode('<p>', $rawContentFiltered);
+                    $bodyParagraphs = [];
+                    foreach ($array as $value) {
+                      if (strcmp($value, '')) {
+                        $type = 'text';
+                        $imageMeta = [];
+
+                        if (strpos($value, '<img') !== false) {
+                          $type = 'image';
+                          $attrArray = current((array) new \SimpleXMLElement($value));
+
+                          $parts = explode('/', $attrArray['src']);
+                          $lastPart = array_pop($parts);
+                          if (strpos($lastPart, '-') !== false) {
+                            $parts = explode('-', $lastPart);
+                          } else if (strpos($lastPart, '.') !== false) {
+                            $parts = explode('.', $lastPart);
+                          }
+
+                          $imageMeta = [
+                            'name' => $parts[0],
+                            'src' => $attrArray['src'],
+                            'classNames' => $attrArray['class']
+                          ];
+                        }
+
+                        $bodyParagraphs[] = [
+                          'type' => $type,
+                          'content' => $value,
+                          'imageMeta' => $imageMeta
+                        ];
+                      }
+                    }
+                    return $bodyParagraphs;
                 }
             ],
             'excerpt' => [

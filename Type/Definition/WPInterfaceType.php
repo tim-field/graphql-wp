@@ -2,6 +2,8 @@
 
 namespace Mohiohio\GraphQLWP\Type\Definition;
 
+error_reporting(E_ALL & ~E_STRICT & ~E_NOTICE);
+
 use \GraphQL\Type\Definition\InterfaceType;
 
 abstract class WPInterfaceType extends InterfaceType {

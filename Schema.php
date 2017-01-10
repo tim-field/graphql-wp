@@ -7,7 +7,9 @@ use GraphQLRelay\Relay;
 
 use Mohiohio\GraphQLWP\Type\Definition\WPQuery;
 use Mohiohio\GraphQLWP\Type\Definition\WPPost;
+use Mohiohio\GraphQLWP\Type\Definition\WPSetting;
 use Mohiohio\GraphQLWP\Type\Definition\WPTerm;
+use Mohiohio\GraphQLWP\Type\Definition\WPObjectType;
 
 class Schema
 {
@@ -16,7 +18,11 @@ class Schema
 
     static function build() {
         static::init();
-        return new \GraphQL\Schema(static::getQuery());
+        return new \GraphQL\Schema([
+          'query' => static::getQuery(),
+          'mutation' => null,
+          'types' => static::getArrayOfTypesWithInterfaces()
+        ]);
     }
 
     static function init() {
@@ -56,11 +62,45 @@ class Schema
         });
     }
 
+    static function getArrayOfTypesWithInterfaces() {
+      // see: https://github.com/webonyx/graphql-php/blob/master/UPGRADE.md
+      return [];
+    }
+
     static function getQuery() {
         return static::$query ?: static::$query = new ObjectType(static::getQuerySchema());
     }
 
     static function getQuerySchema() {
+        $ImageStyle = new ObjectType([
+          'name' => 'ImageStyle',
+          'isTypeOf' => function() {return true;},
+          'fields' => [
+            'h' => ['type' => Type::int()],
+            'w' => ['type' => Type::int()]
+          ],
+          'interfaces' => []
+        ]);
+
+        $MediaSetting = new ObjectType([
+          'name' => 'MediaSetting',
+          'isTypeOf' => function() {return true;},
+          'fields' => [
+            'thumb' => ['type' => $ImageStyle],
+            'medium' => ['type' => $ImageStyle],
+            'large' => ['type' => $ImageStyle]
+          ],
+          'interfaces' => []
+        ]);
+
+        $Setting = new ObjectType([
+          'name' => 'Setting',
+          'isTypeOf' => function() {return true;},
+          'fields' => [
+            'media' => ['type' => $MediaSetting]
+          ],
+          'interfaces' => []
+        ]);
 
         $schema = apply_filters('graphql-wp/get_query_schema',[
             'name' => 'Query',
@@ -70,6 +110,27 @@ class Schema
                     'resolve' => function($root, $args) {
                         global $wp_query;
                         return $wp_query;
+                    }
+                ],
+                'wp_settings' => [
+                    'type' => $Setting,
+                    'resolve' => function($root, $args) {
+                        return [
+                          'media' => [
+                            'thumb' => [
+                              'w' => get_option('thumbnail_size_w'),
+                              'h' => get_option('thumbnail_size_h')
+                            ],
+                            'medium' => [
+                              'w' => get_option('medium_size_w'),
+                              'h' => get_option('medium_size_h')
+                            ],
+                            'large' => [
+                              'w' => get_option('large_size_w'),
+                              'h' => get_option('large_size_h')
+                            ]
+                          ]
+                        ];
                     }
                 ],
                 'wp_post' => [
