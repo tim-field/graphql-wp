@@ -245,6 +245,18 @@ class Schema
 
                       return is_wp_error($res) ? [] : $res;
                   }
+              ],
+              'meta_value' => [
+                  'type' => Type::string(),
+                  'args' => [
+                      'key' => [
+                          'description' => 'Post meta key',
+                          'type' => Type::nonNull(Type::string()),
+                      ]
+                  ],
+                  'resolve' => function($post, $args) {
+                      return get_post_meta($post->ID,$args['key'],true);
+                  }
               ]
           ],
       ]);
