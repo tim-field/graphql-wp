@@ -257,7 +257,17 @@ class Schema
                   'resolve' => function($post, $args) {
                       return get_post_meta($post->ID,$args['key'],true);
                   }
-              ]
+              ],
+              'thumbnail_url' => [
+                  'description' => 'Retrieve the post thumbnail.',
+                  'type' => Type::string(),
+                  'args' => [
+                      'size' => ['type' => Type::string()]
+                  ],
+                  'resolve' => function($post) {
+                      return get_the_post_thumbnail_url( $post, isset($args['size']) ? $args['size'] : 'post-thumbnail') ?: null;
+                  }
+              ],
           ],
       ]);
   }
