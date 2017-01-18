@@ -179,7 +179,7 @@ class WPPost extends WPInterfaceType {
                 'args' => [
                     'size' => ['type' => Type::string()]
                 ],
-                'resolve' => function($post) {
+                'resolve' => function($post, $args) {
                     return get_the_post_thumbnail_url( $post, isset($args['size']) ? $args['size'] : 'post-thumbnail') ?: null;
                 }
             ],
