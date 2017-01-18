@@ -14,7 +14,7 @@ class BlogInfo extends WPObjectType {
 
     static function getFieldSchema() {
 
-        $type = ['type' => Type::string(), 'resolve' => function($filter, $args, $resolveInfo) {
+        $type = ['type' => Type::string(), 'resolve' => function($filter, $args, $context, $resolveInfo) {
             return get_bloginfo($resolveInfo->fieldName, isset($args['filter']) ?: $filter );
         }];
 
