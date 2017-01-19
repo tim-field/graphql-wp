@@ -9,10 +9,6 @@ class Tag extends WPObjectType {
 
     const TAXONOMY = 'tag';
 
-    static function getInstance() { // TODO smells bad
-        return WPTerm::getTypes(static::TAXONOMY);
-    }
-
     static function getDescription() {
         return "The \'post_tag\' taxonomy is similar to categories, but more free form.";
     }

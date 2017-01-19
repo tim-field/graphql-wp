@@ -8,12 +8,6 @@ use Mohiohio\GraphQLWP\Schema;
 
 class WPQuery extends WPObjectType {
 
-    private static $instance;
-
-    static function getInstance($config=[]) {
-        return static::$instance ?: static::$instance = new static($config);
-    }
-
     static function getDescription() {
         return 'deals with the intricacies of a post request on a WordPress blog';
     }

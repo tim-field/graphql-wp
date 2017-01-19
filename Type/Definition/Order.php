@@ -4,11 +4,19 @@ namespace Mohiohio\GraphQLWP\Type\Definition;
 
 use GraphQL\Type\Definition\ListOfType;
 use GraphQL\Type\Definition\Type;
+use GraphQL\Type\Definition\ResolveInfo;
+use Mohiohio\GraphQLWP\WPType;
 
 class Order extends PostType {
 
     static function getPostType() {
         return 'shop_order'; // TODO could be multiple, see wc_get_order_types();
+    }
+
+    function isTypeOf($obj, $context, ResolveInfo $info) {
+        if($obj instanceOf \WP_Post && in_array($obj->post_type, wc_get_order_types())) {
+            return WPType::get(get_called_class());
+        }
     }
 
     static function toOrder($post) {

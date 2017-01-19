@@ -141,10 +141,7 @@ class Product extends PostType {
                 }
             ],
             'variations' => [
-                'type' => function() {
-                    //return new ListOfType(Product::getInstance());
-                    return new ListOfType(Product::getInstance());
-                },
+                'type' => new ListOfType(Product::getInstance()),
                 'resolve' => function($post) {
 
                     $product = static::toProduct($post);
@@ -159,9 +156,7 @@ class Product extends PostType {
                 },
             ],
             'images' => [
-                'type' => function(){
-                    return new ListOfType(Attachment::getInstance());
-                },
+                'type' =>  new ListOfType(Attachment::getInstance()),
                 'resolve' => function($post) {
 
                     $product = static::toProduct($post);

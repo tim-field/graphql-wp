@@ -26,8 +26,6 @@ Router::routes([
         $contentTypeIsJson = (isset($_SERVER['HTTP_CONTENT_TYPE']) && $_SERVER['HTTP_CONTENT_TYPE'] == 'application/json')
             ||  (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/json');
 
-        log('contentTypeIsJson', $contentTypeIsJson);
-
         if ($contentTypeIsJson) {
             $rawBody = file_get_contents('php://input');
 

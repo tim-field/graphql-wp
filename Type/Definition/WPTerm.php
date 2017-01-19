@@ -2,7 +2,9 @@
 
 namespace Mohiohio\GraphQLWP\Type\Definition;
 
+use Mohiohio\GraphQLWP\WPType;
 use GraphQL\Type\Definition\Type;
+use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\ListOfType;
 use GraphQLRelay\Relay;
 
@@ -11,33 +13,10 @@ class WPTerm extends WPInterfaceType {
     const TYPE = 'WP_Term';
     const DEFAULT_TYPE = 'category';
 
-    private static $instance;
-    private static $internalTypes;
-
-    static function getInstance($config=[]) {
-        return static::$instance ?: static::$instance = new static($config);
-    }
-
-    static function resolveType($obj) {
+    function resolveType($obj, $context, ResolveInfo $info) {
         if($obj instanceOf \WP_Term){
-            return isset(self::$internalTypes[$obj->taxonomy]) ? self::$internalTypes[$obj->taxonomy] : self::$internalTypes[self::DEFAULT_TYPE];
+            return WPType::get(__NAMESPACE__.'\\'.ucfirst($obj->taxonomy)) ?? WPType::get(__NAMESPACE__.'\\'.ucfirst(self::DEFAULT_TYPE));
         }
-    }
-
-    static function init() {
-        static::getTypes();
-    }
-
-    static function getTypes($name = null) {
-        if (null === self::$internalTypes) {
-            // Warning never call Category::getInstance() here, getInstance calls this function
-            self::$internalTypes = apply_filters('graphql-wp/get_term_types',[ //TODO move to parent
-                Category::TAXONOMY => new Category,
-                Tag::TAXONOMY => new Tag,
-                PostFormat::TAXONOMY => new PostFormat
-            ]);
-        }
-        return $name ? self::$internalTypes[$name] : self::$internalTypes;
     }
 
     static function getDescription() {
@@ -57,14 +36,10 @@ class WPTerm extends WPInterfaceType {
             'taxonomy' => ['type' => Type::string()],
             'description' => ['type' => Type::string()],
             'parent' => [
-                'type' => function() {
-                    return static::getInstance();
-                }
+                'type' => static::getInstance()
             ],
             'children' => [
-                'type' => function() {
-                    return new ListOfType(static::getInstance());
-                },
+                'type' => new ListOfType(static::getInstance()),
                 'description' => 'retrieves children of the term',
                 'resolve' => function($term) {
                     return array_map(function($id) use ($term) {
@@ -73,9 +48,7 @@ class WPTerm extends WPInterfaceType {
                 }
             ],
             'image' => [
-                'type' => function() {
-                    return Attachment::getInstance();
-                },
+                'type' => Attachment::getInstance(),
                 'args' => [
                     'meta_key' => ['type' => Type::string()]
                 ],

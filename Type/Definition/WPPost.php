@@ -3,43 +3,20 @@
 namespace Mohiohio\GraphQLWP\Type\Definition;
 
 use GraphQL\Type\Definition\Type;
+use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\ListOfType;
 use GraphQLRelay\Relay;
+use Mohiohio\GraphQLWP\WPType;
 
-//TODO getTypes should move to parent class and define a getTypes abstract method
 class WPPost extends WPInterfaceType {
 
     const TYPE = 'WP_Post';
     const DEFAULT_TYPE = 'post';
 
-    private static $internalTypes;
-    private static $instance;
-
-    static function getInstance($config=[]) {
-        return static::$instance ?: static::$instance = new static($config);
-    }
-
-    static function init() {
-        static::getTypes();
-    }
-
-    static function resolveType($obj) {
-        if($obj instanceOf \WP_Post){
-            return isset(self::$internalTypes[$obj->post_type]) ? self::$internalTypes[$obj->post_type] : self::$internalTypes[self::DEFAULT_TYPE];
+    function resolveType($obj, $context, ResolveInfo $info) {
+        if($obj instanceOf \WP_Post) {
+            return WPType::get(__NAMESPACE__.'\\'.ucfirst($obj->post_type)) ?? WPType::get(__NAMESPACE__.ucfirst(self::DEFAULT_TYPE));
         }
-    }
-
-    static function getTypes($name = null) {
-        if (null === self::$internalTypes) {
-            self::$internalTypes = apply_filters('graphql-wp/get_post_types',[ //TODO move to parent
-                Post::getPostType() => new Post(),
-                Page::getPostType() => new Page(),
-                Attachment::getPostType() => new Attachment(),
-                Product::getPostType() => new Product(),
-                Order::getPostType() => new Order()
-            ]);
-        }
-        return $name ? self::$internalTypes[$name] : self::$internalTypes;
     }
 
     static function getDescription() {
@@ -118,16 +95,14 @@ class WPPost extends WPInterfaceType {
                 }
             ],
             'status' => [
-                'type' => PostStatus::getInstance(),
+                'type' => static::getInstance(),
                 'description' => 'Status of the post',
                 'resolve' => function($post) {
                     return $post->post_status;
                 }
             ],
             'parent' => [
-                'type' => function() {
-                    return static::getInstance();
-                },
+                'type' => static::getInstance(),
                 'description' => 'Parent of this post',
                 'resolve' => function($post) {
                     return $post->post_parent ? get_post($post->post_parent) : null;
@@ -184,9 +159,7 @@ class WPPost extends WPInterfaceType {
                 }
             ],
             'attached_media' => [
-                'type' => function(){
-                    return new ListOfType(Attachment::getInstance());
-                },
+                'type' => new ListOfType(Attachment::getInstance()),
                 'args' => [
                     'type' => ['type' => Type::nonNull(Type::string())]
                 ],

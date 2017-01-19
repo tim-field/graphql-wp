@@ -2,6 +2,7 @@
 
 namespace Mohiohio\GraphQLWP\Type\Definition;
 
+use Mohiohio\GraphQLWP\WPType;
 use function Stringy\create as s;
 
 trait WPSchema {
@@ -12,6 +13,14 @@ trait WPSchema {
 
     abstract static function getFieldSchema();
 
+    static function getInstance($config=[]) {
+        return WPType::get(get_called_class());
+    }
+
+    static function getName() {
+        return (new \ReflectionClass(get_called_class()))->getShortName();
+    }
+
     static function getSchema($config=[]) {
         return static::getWPSchema($config);
     }
@@ -20,12 +29,10 @@ trait WPSchema {
         return apply_filters('graphql-wp/get_'.static::getType().'_schema', array_replace_recursive([
             'name' => static::getName(),
             'description' => static::getDescription(),
-            'fields' => static::getFieldSchema(),
+            'fields' => function() {
+                return static::getFieldSchema();
+            }
         ],$config));
-    }
-
-    static function getName() {
-        return (new \ReflectionClass(get_called_class()))->getShortName();
     }
 
     static function getDescription() {

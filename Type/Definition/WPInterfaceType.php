@@ -14,5 +14,6 @@ abstract class WPInterfaceType extends InterfaceType {
         ],$config));
     }
 
-    abstract static function resolveType($obj);
+    //abstract static function resolveWPType($obj);
+    //public function resolveType($objectValue, $context, ResolveInfo $info)
 }
