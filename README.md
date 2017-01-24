@@ -33,17 +33,17 @@ The best way to explore / develop with this is by using a tool such as [ChromeiQ
 ###wp_query
 This is designed to follow WordPress' existing WP Query functions.  So as a rule you can pass the same parameters as your can to [WP Query](https://codex.wordpress.org/Class_Reference/WP_Query)*.
 
-**In reality there are a lot of params you can pass to WP_Query, and I've only implemented the ones that I've needed so far. But adding more is trivial as the arguments are just passed directly to the get_posts function, so its just a matter of defining them in the schema.* 
+**In reality there are a lot of params you can pass to WP_Query, and I've only implemented the ones that I've needed so far. But adding more is trivial as the arguments are just passed directly to the get_posts function, so its just a matter of defining them in the schema.*
 
  ```json
- {"query":"{ 
-    	wp_query { 
-    		posts(paged: 1 posts_per_page: 10)  { 
-    			title 
-    			name 
-    			terms (taxonomy:\"category\") { 
-    				name 
-    				slug 
+ {"query":"{
+    	wp_query {
+    		posts(paged: 1 posts_per_page: 10)  {
+    			title
+    			name
+    			terms (taxonomy:\"category\") {
+    				name
+    				slug
     			}
     		}
     	}
@@ -67,12 +67,12 @@ Will give you
               ]
            } ...
 
-Also available on wp_query menu 
+Also available on wp_query menu
 
     {"query":
-	    "{ wp_query 
-		    { menu(name: \"Main Menu\")  { 
-			    title 
+	    "{ wp_query
+		    { menu(name: \"Main Menu\")  {
+			    title
 			    url
 			}
 		}
@@ -135,9 +135,37 @@ class Foo extends Post {
     }
 }
 
-add_filter('graphql-wp/get_post_types', function($types){
-    return $types + [
-        'foo' => new Foo
-    ];
+add_filter('graphql-wp/schema-types', function($types){
+    return array_merge($types, [
+        Foo::getInstance()
+    ]);
+});
+```
+
+### Custom Fields
+
+Extend the existing field function
+
+```php
+add_filter('graphql-wp/get_post_schema', function($schema) {
+
+    $schema['fields'] = function() use ($schema) {
+               // Note call to "parent" function here
+        return $schema['fields']() + [
+            'foo' => [
+                'type' => Type::string(),
+                'resolve' => function($post) {
+                    return get_post_meta($post->ID, 'foo' ,true);
+                }
+            ],
+            'bar' => [
+                'type' => Type::string(),
+                'resolve' => function($post) {
+                    return get_post_meta($post->ID, 'bar' ,true);
+                }
+            ]
+        ];
+    };
+    return $schema;
 });
 ```
