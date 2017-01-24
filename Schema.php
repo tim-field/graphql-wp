@@ -37,7 +37,7 @@ class Schema
 
         return new \GraphQL\Schema([
             'query' => static::getQuery(),
-            'types' => apply_filters('graphql-wp/schema-types',[
+            'types' => apply_filters('graphql-wp/get_post_types', apply_filters('graphql-wp/schema-types',[
                 WPPost::getInstance(),
                 WPTerm::getInstance(),
                 Post::getInstance(),
@@ -46,7 +46,7 @@ class Schema
                 Category::getInstance(),
                 Tag::getInstance(),
                 PostFormat::getInstance()
-            ])
+            ]))
         ]);
     }
 
