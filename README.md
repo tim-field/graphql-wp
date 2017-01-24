@@ -3,8 +3,6 @@ A GraphQL endpoint for WordPress
 
 This is a WordPress Plugin that exposes a GraphQL endpoint at **/graphql**
 
-This is a work in progress / in active development, but already pretty useful.
-
 Uses this excellent [graphql-php](https://github.com/webonyx/graphql-php) library.
 
 ##Install
