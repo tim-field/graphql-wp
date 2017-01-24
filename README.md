@@ -145,6 +145,7 @@ add_filter('graphql-wp/schema-types', function($types){
 Extend the existing field function
 
 ```php
+// There is a get_{post_type}_schema call available for each post type
 add_filter('graphql-wp/get_post_schema', function($schema) {
 
     $schema['fields'] = function() use ($schema) {
