@@ -40,6 +40,6 @@ trait WPSchema {
     }
 
     static function getType() {
-        return (string) s(static::getName())->underscored();
+        return (string) str_replace('w_p_','wp_', s(static::getName())->underscored());
     }
 }
