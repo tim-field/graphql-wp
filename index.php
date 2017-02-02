@@ -59,6 +59,7 @@ Router::routes([
                     $schema,
                     $requestString,
                     /* $rootValue */ null,
+                    /* $contextValue */ null,
                     $variableValues,
                     $operationName
                 );
