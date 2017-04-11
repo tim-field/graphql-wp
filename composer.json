@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "php": ">=5.6",
+        "php": ">=7",
         "mohiohio/wordpress-lib":"^0.1",
         "webonyx/graphql-php": "^v0.8.0",
         "ivome/graphql-relay-php": "^0.3.1",
