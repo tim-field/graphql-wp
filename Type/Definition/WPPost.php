@@ -47,6 +47,13 @@ class WPPost extends WPInterfaceType {
                     return get_the_title($post);
                 }
             ],
+            'author' => [
+                'type' => Type::string(),
+                'description' => 'The author of the post',
+                'resolve' => function() {
+                    return get_the_modified_author();
+                }
+            ],
             'content' => [
                 'type' => Type::string(),
                 'description' => 'The full content of the post',
