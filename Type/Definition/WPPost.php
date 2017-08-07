@@ -56,7 +56,7 @@ class WPPost extends WPInterfaceType {
             ],
             'excerpt' => [
                 'type' => Type::string(),
-                'description' => 'User-defined post except',
+                'description' => 'User-defined post excerpt',
                 'args' => [
                     'always' => [
                         'type' => Type::boolean(),
