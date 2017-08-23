@@ -15,7 +15,7 @@ class WPPost extends WPInterfaceType {
 
     function resolveType($obj, $context, ResolveInfo $info) {
         if($obj instanceOf \WP_Post) {
-            return WPType::get(__NAMESPACE__.'\\'.ucfirst($obj->post_type)) ?? WPType::get(__NAMESPACE__.ucfirst(self::DEFAULT_TYPE));
+            return WPType::get(__NAMESPACE__.'\\'.ucfirst($obj->post_type)) ?? WPType::get(__NAMESPACE__.'\\'.ucfirst(self::DEFAULT_TYPE));
         }
     }
 
