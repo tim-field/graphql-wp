@@ -22,13 +22,13 @@ Assuming you have something like this in your composer.json file ( so it knows t
 If your aren't familar with using composer with WordPress I'd recommend using a setup like [bedrock](https://roots.io/bedrock/). Otherwise you will at the least need to [require autoload.php](https://getcomposer.org/doc/01-basic-usage.md#autoloading) for this to work.
 
 
-##Using
+## Using
 
 The best way to explore / develop with this is by using a tool such as [ChromeiQL](https://chrome.google.com/webstore/detail/chromeiql/fkkiamalmpiidkljmicmjfbieiclmeij) That will show you the endpoints and arguments that are available.
 
 ![https://raw.githubusercontent.com/balintsera/graphql-wp/fix/no-response/.readme.md/graphiql-query.png](https://raw.githubusercontent.com/balintsera/graphql-wp/fix/no-response/.readme.md/graphiql-query.png)
 
-###wp_query
+### wp_query
 This is designed to follow WordPress' existing WP Query functions.  So as a rule you can pass the same parameters as your can to [WP Query](https://codex.wordpress.org/Class_Reference/WP_Query)*.
 
 **In reality there are a lot of params you can pass to WP_Query, and I've only implemented the ones that I've needed so far. But adding more is trivial as the arguments are just passed directly to the get_posts function, so its just a matter of defining them in the schema.*
@@ -91,13 +91,13 @@ Will give you
       }
     }
 
-###Post
+### Post
 
 And of course you can get an individual post *( but most of the time you'll probably use wp_query as your main entry point )*
 
 `{"query":"{wp_post(ID:\"1\") { title, content, status }}"}`
 
-###Custom Post Types
+### Custom Post Types
 
 This is how you can add custom post types ( which have custom fields ) to a client specific plugin.
 graphql-wp/get_post_types is a good hook for this.
