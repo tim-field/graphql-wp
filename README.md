@@ -58,14 +58,14 @@ Will give you
           "posts": [
            {
               "title": "Much better than REST",
-              "name": "so-easy-yes"
+              "name": "so-easy-yes",
               "terms": [
-              {
+                  {
 	              "name": "Example Category ",
 	              "slug": "example-category"
 	          }
               ]
-           } ...
+           }
 ```
 Also available on wp_query menu
 
