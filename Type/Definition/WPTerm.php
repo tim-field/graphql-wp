@@ -59,6 +59,15 @@ class WPTerm extends WPInterfaceType {
                         return get_post($thumbnail_id);
                     }
                 }
+            ],
+            'ancestors' => [
+                'type' => new ListOfType(static::getInstance()),
+                'description' => 'retrieves ancestors of the term',
+                'resolve' => function($term) {
+                    return array_map(function($id) use ($term) {
+                        return get_term( $id, $term->taxonomy);
+                    }, get_ancestors($term->term_id, $term->taxonomy, 'taxonomy'));
+                }
             ]
         ];
     }
