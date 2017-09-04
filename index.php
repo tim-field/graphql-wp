@@ -15,6 +15,11 @@ use Mohiohio\WordPress\Router;
 
 const ENDPOINT = '/graphql/';
 
+if(file_exists(__DIR__.'/vendor')) {
+    // echo 'autoloading vendor';
+    require __DIR__.'/vendor/autoload.php';
+}
+
 Router::routes([
 
     ENDPOINT => function() {
