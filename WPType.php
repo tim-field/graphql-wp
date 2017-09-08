@@ -12,7 +12,6 @@ class WPType {
 
     protected static function initType($className) {
         if(!class_exists($className)){
-            //trigger_error('Unable to find type '.$className, E_USER_WARNING);
             return null;
         }
 

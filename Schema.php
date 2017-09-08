@@ -17,10 +17,12 @@ use Mohiohio\GraphQLWP\Type\Definition\Order;
 use Mohiohio\GraphQLWP\Type\Definition\Category;
 use Mohiohio\GraphQLWP\Type\Definition\Tag;
 use Mohiohio\GraphQLWP\Type\Definition\PostFormat;
+use Mohiohio\GraphQLWP\Type\Definition\PostInput;
 
 class Schema
 {
     static protected $query = null;
+    static protected $mutation = null;
     static protected $nodeDefinition = null;
 
     static function build() {
@@ -37,6 +39,7 @@ class Schema
 
         return new \GraphQL\Schema([
             'query' => static::getQuery(),
+            'mutation' => static::getMutation(),
             'types' => apply_filters('graphql-wp/get_post_types', apply_filters('graphql-wp/schema-types',[
                 WPPost::getInstance(),
                 WPTerm::getInstance(),
@@ -87,7 +90,7 @@ class Schema
 
     static function getQuerySchema() {
 
-        $schema = apply_filters('graphql-wp/get_query_schema',[
+        $schema = apply_filters('graphql-wp/get_query_schema', [
             'name' => 'Query',
             'fields' => function() {
                 return [
@@ -142,5 +145,40 @@ class Schema
         ]);
 
         return $schema;
+    }
+
+    static function getMutation() {
+      return static::$mutation ?: static::$mutation = new ObjectType(static::getMutationSchema());
+    }
+
+    static function getMutationSchema() {
+      return apply_filters('graphql-wp/get_mutation_schema', [
+        'name' => 'Mutation',
+        'fields' => function() {
+          return [
+            'insert_post' => [
+              'args' => [
+                'postdata' => PostInput::getInstance()
+              ],
+              // 'type' => Post::getInstance(),
+              'type' => new ObjectType([
+                'name' => 'InsertPostOutput',
+                'fields' => [
+                  'post' => Post::getInstance(),
+                ]
+              ]),
+              'resolve' => function($root, $args) {
+                $res = wp_insert_post($args['postdata'], true);
+                if(is_wp_error($res)) {
+                  throw new \Exception($res->get_error_message());
+                }
+                return [
+                  'post' => get_post($res)
+                ];
+              }
+            ]
+          ];
+        }
+      ]);
     }
 }
