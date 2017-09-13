@@ -3,6 +3,7 @@ namespace Mohiohio\GraphQLWP;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
+use GraphQL\Type\Definition\ListOfType;
 use GraphQLRelay\Relay;
 
 use Mohiohio\GraphQLWP\Type\Definition\WPQuery;
@@ -18,6 +19,8 @@ use Mohiohio\GraphQLWP\Type\Definition\Category;
 use Mohiohio\GraphQLWP\Type\Definition\Tag;
 use Mohiohio\GraphQLWP\Type\Definition\PostFormat;
 use Mohiohio\GraphQLWP\Type\Definition\PostInput;
+use Mohiohio\GraphQLWP\Type\Definition\MenuItem;
+use Mohiohio\GraphQLWP\Type\Definition\BlogInfo;
 
 class Schema
 {
@@ -69,6 +72,9 @@ class Schema
                 return get_post($idComponents['id']);
                 case WPTerm::TYPE;
                 return get_term($idComponents['id']);
+                // case WPQuery::TYPE;
+                // global $wp_query;
+                // return $wp_query;
                 default;
                 return null;
             }
@@ -90,61 +96,98 @@ class Schema
 
     static function getQuerySchema() {
 
-        $schema = apply_filters('graphql-wp/get_query_schema', [
-            'name' => 'Query',
-            'fields' => function() {
-                return [
-                    'wp_query' => [
-                        'type' => WPQuery::getInstance(),
-                        'resolve' => function($root, $args) {
-                            global $wp_query;
-                            return $wp_query;
-                        }
-                    ],
-                    'wp_post' => [
-                        'type' => WPPost::getInstance(),
-                        'args' => [
-                            'ID' => [
-                                'name' => 'ID',
-                                'description' => 'id of the post',
-                                'type' => Type::int()
-                            ],
-                            'slug' => [
-                                'name' => 'slug',
-                                'description' => 'name of the post',
-                                'type' => Type::string()
-                            ],
-                            'post_type' => [
-                                'name' => 'post_type',
-                                'description' => 'type of the post',
-                                'type' => Type::string()
-                            ]
-                        ],
-                        'resolve' =>  function ($root, $args) {
-                            if(isset($args['ID'])){
-                                return get_post($args['ID']);
-                            }
-                            return get_page_by_path( $args['slug'], \OBJECT, isset($args['post_type']) ? $args['post_type'] : WPPost::DEFAULT_TYPE );
-                        }
-                    ],
-                    'term' => [
-                        'type' => WPTerm::getInstance(),
-                        'args' => [
-                            'id' => [
-                                'type' => Type::string(),
-                                'desciption' => 'Term id'
-                            ]
-                        ],
-                        'resolve' => function($root, $args) {
-                            return get_term($args['id']);
-                        }
-                    ],
-                    'node' => static::getNodeDefinition()['nodeField']
-                ];
-            }
-        ]);
+      $schema = apply_filters('graphql-wp/get_query_schema', [
+        'name' => 'Query',
+        'fields' => function() {
+          return [
+            'wp_query' => [
+              'type' => WPQuery::getInstance(),
+              'resolve' => function($root, $args) {
+                global $wp_query;
+                return $wp_query;
+              }
+            ],
+            'wp_post' => [
+              'type' => WPPost::getInstance(),
+              'args' => [
+                'ID' => [
+                  'name' => 'ID',
+                  'description' => 'id of the post',
+                  'type' => Type::int()
+                ],
+                'slug' => [
+                  'name' => 'slug',
+                  'description' => 'name of the post',
+                  'type' => Type::string()
+                ],
+                'post_type' => [
+                  'name' => 'post_type',
+                  'description' => 'type of the post',
+                  'type' => Type::string()
+                ]
+              ],
+              'resolve' =>  function ($root, $args) {
+                if(isset($args['ID'])){
+                  return get_post($args['ID']);
+                }
+                return get_page_by_path( $args['slug'], \OBJECT, isset($args['post_type']) ? $args['post_type'] : WPPost::DEFAULT_TYPE );
+              }
+            ],
+            'term' => [
+              'type' => WPTerm::getInstance(),
+              'args' => [
+                'id' => [
+                  'type' => Type::string(),
+                  'desciption' => 'Term id'
+                ]
+              ],
+              'resolve' => function($root, $args) {
+                return get_term($args['id']);
+              }
+            ],
+            'menu' => [
+                'type' => new ListOfType( MenuItem::getInstance() ),
+                'args' => [
+                    'name' => [
+                        'type' => Type::nonNull(Type::string()),
+                        'description' => "Menu 'id','name' or 'slug'"
+                    ]
+                ],
+                'resolve' => function($root, $args) {
+                    return wp_get_nav_menu_items($args['name']) ?: [];
+                }
+            ],
+            'bloginfo' => [
+                'type' => BlogInfo::getInstance(),
+                'resolve' => function($root, $args){
+                    return isset($args['filter']) ? $args['filter'] : 'raw';
+                }
+            ],
+            'home_page' => [
+                'type' => WPPost::getInstance(),
+                'resolve' => function(){
+                    return get_post(get_option('page_on_front'));
+                }
+            ],
+            'terms' => [
+                'type' => new ListOfType(WPTerm::getInstance()),
+                'description' => 'Retrieve the terms in a given taxonomy or list of taxonomies. ',
+                'args' => WPTerm::getArgs(),
+                'resolve' => function($root, $args) {
 
-        return $schema;
+                    $taxonomies = isset($args['taxonomies'])
+                    ? $args['taxonomies']
+                    : isset($args['taxonomy']) ? $args['taxonomy'] : 'category';
+
+                    return get_terms($taxonomies, $args);
+                }
+            ],
+            'node' => static::getNodeDefinition()['nodeField']
+          ];
+        }
+      ]);
+
+      return $schema;
     }
 
     static function getMutation() {
@@ -152,31 +195,48 @@ class Schema
     }
 
     static function getMutationSchema() {
+
       return apply_filters('graphql-wp/get_mutation_schema', [
         'name' => 'Mutation',
         'fields' => function() {
           return [
-            'insert_post' => [
-              'args' => [
-                'postdata' => PostInput::getInstance()
-              ],
-              // 'type' => Post::getInstance(),
-              'type' => new ObjectType([
-                'name' => 'InsertPostOutput',
-                'fields' => [
-                  'post' => Post::getInstance(),
+            'insert_post' => Relay::mutationWithClientMutationId([
+              'name' => 'InsertPost',
+              'inputFields' => PostInput::getFieldSchema(),
+              'outputFields' => [
+                'post' => [
+                  'type' => WPPost::getInstance(),
+                  'resolve' => function($payload) {
+                    return get_post($payload['postID']);
+                  }
+                ],
+                'postEdge' => [
+                  'type' => WPPost::getEdgeInstance(),
+                  'resolve' => function($payload) {
+                    return [
+                      'node' => get_post($payload['postID']),
+                      'cursor' => 'xyz'
+                    ];
+                  }
+                ],
+                'wp_query' => [
+                  'type' => WPQuery::getInstance(),
+                  'resolve' => function() {
+                    global $wp_query;
+                    return $wp_query;
+                  }
                 ]
-              ]),
-              'resolve' => function($root, $args) {
-                $res = wp_insert_post($args['postdata'], true);
+              ],
+              'mutateAndGetPayload' => function($input) {
+                $res = wp_insert_post($input, true);
                 if(is_wp_error($res)) {
                   throw new \Exception($res->get_error_message());
                 }
                 return [
-                  'post' => get_post($res)
+                  'postID' => $res
                 ];
               }
-            ]
+            ]),
           ];
         }
       ]);

@@ -21,6 +21,14 @@ trait WPSchema {
         return (new \ReflectionClass(get_called_class()))->getShortName();
     }
 
+    static function getEdgeInstance() {
+        return WPType::getEdge(get_called_class(), static::getInstance());
+    }
+
+    static function getConnectionInstance() {
+        return WPType::getConnection(get_called_class(), static::getInstance());
+    }
+
     static function getSchema($config=[]) {
         return static::getWPSchema($config);
     }
