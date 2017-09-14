@@ -3,6 +3,7 @@
 namespace Mohiohio\GraphQLWP\Type\Definition;
 
 use GraphQLRelay\Relay;
+use GraphQLRelay\Connection\ArrayConnection;
 use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Definition\ListOfType;
 use GraphQL\Type\Definition\ResolveInfo;
@@ -29,7 +30,7 @@ class WPQuery extends WPObjectType {
 
   static function getFieldSchema() {
 
-    $relayAgs = Relay::connectionArgs();
+    $relayArgs = Relay::connectionArgs();
 
     $schema = [
       'id' => Relay::globalIdField(self::TYPE, function(){
@@ -37,7 +38,7 @@ class WPQuery extends WPObjectType {
       }),
       'posts' => [
         'type' => WPPost::getConnectionInstance(),
-        'args' => static::extendArgs($relayAgs),
+        'args' => static::extendArgs($relayArgs),
         'resolve' => function($root, $args) {
           return static::getPosts($args);
         }
@@ -56,7 +57,7 @@ class WPQuery extends WPObjectType {
           'category_name' => [
             'description' => "Show in this product category slug",
             'type' => Type::string()
-            ] + $relayAgs
+            ] + $relayArgs
           ]),
           'resolve' => function($root, $args) {
 
@@ -93,7 +94,7 @@ class WPQuery extends WPObjectType {
             'order_status' => [
               'description' => "Status of the order, see wc_get_order_statuses()",
               'type' => new ListOfType(Type::string()),
-              ] + $relayAgs
+              ] + $relayArgs
             ]),
             'resolve' => function($root, $args) {
 
@@ -131,9 +132,33 @@ class WPQuery extends WPObjectType {
     static function getPosts($args) {
       $relayKeys = array_keys(Relay::connectionArgs());
       $postArgs = array_diff_key($args, $relayKeys);
-      $relayArgs = array_intersect_key($args, $relayKeys);
-      $posts = get_posts($postArgs);
-      return Relay::connectionFromArray($posts, $relayArgs);
+      $relayArgs = array_intersect_key($args, array_flip($relayKeys));
+
+      if (isset($relayArgs['first'])) {
+        $paging = [
+          'posts_per_page' => $relayArgs['first'],
+          'offset' => $relayArgs['after']
+            ? ArrayConnection::cursorToOffset($relayArgs['after']) + 1
+            : 0,
+        ];
+      } else {
+        $paging = []; // TODO
+      }
+
+      $types = $args['post_type'] ?? ['post'];
+      $status = $args['post_status'] ?? ['publish'];
+      $total = array_reduce($types, function($total, $type) use($status) {
+        $counts = wp_count_posts($type);
+        return array_reduce($status, function($total, $stati) use ($counts) {
+          return $total += $counts->$stati;
+        }, $total);
+      }, 0);
+
+      $posts = get_posts($postArgs + $paging);
+      return Relay::connectionFromArraySlice($posts, $relayArgs, [
+        'sliceStart' => $paging['offset'] ?? 0,
+        'arrayLength' => $total,
+      ]);
     }
 
     static function extendArgs($args) {
