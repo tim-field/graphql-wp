@@ -147,17 +147,13 @@ class WPQuery extends WPObjectType {
 
       $types = $args['post_type'] ?? ['post'];
       $status = $args['post_status'] ?? ['publish'];
-      $total = array_reduce($types, function($total, $type) use($status) {
-        $counts = wp_count_posts($type);
-        return array_reduce($status, function($total, $stati) use ($counts) {
-          return $total += $counts->$stati;
-        }, $total);
-      }, 0);
 
-      $posts = get_posts($postArgs + $paging);
+      $get_posts = new \WP_Query;
+      $posts = $get_posts->query($postArgs + $paging);
+
       return Relay::connectionFromArraySlice($posts, $relayArgs, [
         'sliceStart' => $paging['offset'] ?? 0,
-        'arrayLength' => $total,
+        'arrayLength' => $get_posts->found_posts,
       ]);
     }
 
