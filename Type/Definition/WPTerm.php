@@ -41,7 +41,7 @@ class WPTerm extends WPInterfaceType {
         'type' => WPTerm::getConnectionInstance(),
         'description' => 'retrieves children of the term',
         'args' => Relay::connectionArgs(),
-        'resolve' => function($term) {
+        'resolve' => function($term, $args) {
           $terms = array_map(function($id) use ($term) {
             return get_term( $id, $term->taxonomy);
           }, get_term_children($term->term_id, $term->taxonomy));
@@ -160,9 +160,9 @@ class WPTerm extends WPInterfaceType {
     $termArgs = array_diff_key($args, $relayKeys);
     $relayArgs = array_intersect_key($args, array_flip($relayKeys));
 
-    $taxonomies = isset($args['taxonomies'])
-      ? $args['taxonomies']
-      : isset($args['taxonomy']) ? $args['taxonomy'] : 'category';
+    $taxonomies = isset($termArgs['taxonomies'])
+      ? $termArgs['taxonomies']
+      : isset($termArgs['taxonomy']) ? $termArgs['taxonomy'] : 'category';
 
     $terms = get_terms($taxonomies, $termArgs);
 
