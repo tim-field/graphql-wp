@@ -170,16 +170,11 @@ class Schema
                 }
             ],
             'terms' => [
-                'type' => new ListOfType(WPTerm::getInstance()),
+                'type' => WPTerm::getConnectionInstance(),
                 'description' => 'Retrieve the terms in a given taxonomy or list of taxonomies. ',
                 'args' => WPTerm::getArgs(),
                 'resolve' => function($root, $args) {
-
-                    $taxonomies = isset($args['taxonomies'])
-                    ? $args['taxonomies']
-                    : isset($args['taxonomy']) ? $args['taxonomy'] : 'category';
-
-                    return get_terms($taxonomies, $args);
+                  return WPTerm::resolve($root, $args);
                 }
             ],
             'node' => static::getNodeDefinition()['nodeField']

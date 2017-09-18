@@ -17,13 +17,6 @@ class WPQuery extends WPObjectType {
     return 'deals with the intricacies of a post request on a WordPress blog';
   }
 
-  // function resolveType($obj, $context, ResolveInfo $info) {
-  //   if($obj instanceOf \WP_Query) {
-  //     global $wp_query;
-  //     return $wp_query;
-  //   }
-  // }
-
   static function getSchemaInterfaces() {
     return [Schema::getNodeDefinition()['nodeInterface']];
   }
@@ -40,7 +33,7 @@ class WPQuery extends WPObjectType {
         'type' => WPPost::getConnectionInstance(),
         'args' => static::extendArgs($relayArgs),
         'resolve' => function($root, $args) {
-          return static::getPosts($args);
+          return static::resolve($root, $args);
         }
       ],
     ];
@@ -76,7 +69,7 @@ class WPQuery extends WPObjectType {
               unset($args['category_name']);
             }
 
-            return static::getPosts($args);
+            return static::resolve($root, $args);
           }
         ];
 
@@ -121,7 +114,7 @@ class WPQuery extends WPObjectType {
               ];
               //}
 
-              return static::getPosts($args);
+              return static::resolve($root, $args);
             }
         ];
       }
@@ -129,7 +122,7 @@ class WPQuery extends WPObjectType {
       return $schema;
     }
 
-    static function getPosts($args) {
+    static function resolve($root, $args) {
       $relayKeys = array_keys(Relay::connectionArgs());
       $postArgs = array_diff_key($args, $relayKeys);
       $relayArgs = array_intersect_key($args, array_flip($relayKeys));
