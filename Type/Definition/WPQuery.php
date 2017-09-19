@@ -130,7 +130,7 @@ class WPQuery extends WPObjectType {
       if (isset($relayArgs['first'])) {
         $paging = [
           'posts_per_page' => $relayArgs['first'],
-          'offset' => $relayArgs['after']
+          'offset' => isset($relayArgs['after'])
             ? ArrayConnection::cursorToOffset($relayArgs['after']) + 1
             : 0,
         ];

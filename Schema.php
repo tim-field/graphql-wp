@@ -177,9 +177,17 @@ class Schema
                   return WPTerm::resolve($root, $args);
                 }
             ],
-            'node' => static::getNodeDefinition()['nodeField']
+            'query' => [
+              'type' => static::getQuery(),
+              'description' => 'Query node one level deep, makes working with Relay easier',
+              'resolve' => function() {
+                return static::getQuery();
+              }
+            ],
+            'node' => static::getNodeDefinition()['nodeField'],
           ];
-        }
+        },
+
       ]);
 
       return $schema;
