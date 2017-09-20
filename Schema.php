@@ -22,6 +22,9 @@ use Mohiohio\GraphQLWP\Type\Definition\PostInput;
 use Mohiohio\GraphQLWP\Type\Definition\MenuItem;
 use Mohiohio\GraphQLWP\Type\Definition\BlogInfo;
 
+use Mohiohio\GraphQLWP\Mutations\Post as PostMutation;
+use Mohiohio\GraphQLWP\Mutations\Term as TermMutation;
+
 class Schema
 {
     static protected $query = null;
@@ -100,6 +103,9 @@ class Schema
         'name' => 'Query',
         'fields' => function() {
           return [
+            'id' => Relay::globalIdField('Query', function(){
+              return 0;
+            }),
             'wp_query' => [
               'type' => WPQuery::getInstance(),
               'resolve' => function($root, $args) {
@@ -198,48 +204,12 @@ class Schema
     }
 
     static function getMutationSchema() {
-
       return apply_filters('graphql-wp/get_mutation_schema', [
         'name' => 'Mutation',
         'fields' => function() {
           return [
-            'insert_post' => Relay::mutationWithClientMutationId([
-              'name' => 'InsertPost',
-              'inputFields' => PostInput::getFieldSchema(),
-              'outputFields' => [
-                'post' => [
-                  'type' => WPPost::getInstance(),
-                  'resolve' => function($payload) {
-                    return get_post($payload['postID']);
-                  }
-                ],
-                'postEdge' => [
-                  'type' => WPPost::getEdgeInstance(),
-                  'resolve' => function($payload) {
-                    return [
-                      'node' => get_post($payload['postID']),
-                      'cursor' => 'xyz'
-                    ];
-                  }
-                ],
-                'wp_query' => [
-                  'type' => WPQuery::getInstance(),
-                  'resolve' => function() {
-                    global $wp_query;
-                    return $wp_query;
-                  }
-                ]
-              ],
-              'mutateAndGetPayload' => function($input) {
-                $res = wp_insert_post($input, true);
-                if(is_wp_error($res)) {
-                  throw new \Exception($res->get_error_message());
-                }
-                return [
-                  'postID' => $res
-                ];
-              }
-            ]),
+            'save_post' => PostMutation::init(),
+            'save_term' => TermMutation::init(),
           ];
         }
       ]);
