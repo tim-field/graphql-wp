@@ -93,8 +93,8 @@ class WPTerm extends WPInterfaceType {
         'type' => Type::string()
       ],
       'hide_empty' => [
-        'description' => "Whether to order terms in ascending or descending order. Accepts 'ASC' (ascending) or 'DESC' (descending). Default 'ASC'",
-        'type' => Type::string()
+        'description' => "Whether to hide terms not assigned to any posts. Accepts 1|true or 0|false. Default 1|true.",
+        'type' => Type::boolean()
       ],
       'include' => [
         'description' => "Array of term ids to include. Default empty array",
