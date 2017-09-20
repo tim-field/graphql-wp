@@ -28,7 +28,7 @@ class WPTerm extends WPInterfaceType {
       'id' => Relay::globalIdField(self::TYPE, function($term) {
         return $term->term_id;
       }),
-      'term_id' => ['type' => Type::string()],
+      'term_id' => ['type' => Type::int()],
       'name' => ['type' => Type::string()],
       'slug' => ['type' => Type::string()],
       'term_taxonomy_id' => ['type' => Type::string()],
