@@ -197,6 +197,10 @@ class WPQuery extends WPObjectType {
           'description' => "Show in this tag id",
           'type' => Type::int()
         ],
+        'tax_query' => [
+          'type' => AssociativeArrayType::getInstance(),
+          'description' => 'Use taxonomy parameters, see https://codex.wordpress.org/Class_Reference/WP_Query#Taxonomy_Parameters'
+        ]
       ];
     }
 
