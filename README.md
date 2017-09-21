@@ -113,8 +113,8 @@ Any meta fields are available like so
 query example {
   wp_post(ID: 9) {
     title
-    foo: meta_key(key: "foo")
-    bar: meta_key(key: "bar")
+    foo: meta_value(key: "foo")
+    bar: meta_value(key: "bar")
   }
 }
 ```
