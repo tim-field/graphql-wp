@@ -71,11 +71,9 @@ Also available on wp_query menu
 
 ```graphql
 query example {
-  wp_query {
-    menu(name:"Main Menu") {
-      id
-      url
-    }
+  menu(name:"Main Menu") {
+    id
+    url
   }
 }
 ```
@@ -84,14 +82,12 @@ Will give you
 ```json
     {
       "data": {
-        "wp_query": {
-          "menu": [
-            {
-              "title": "Home",
-              "url": "http://graphqlwordpress.dev/"
-            }
-          ]
-        }
+        "menu": [
+          {
+            "title": "Home",
+            "url": "http://graphqlwordpress.dev/"
+          }
+        ]
       }
     }
 ```
@@ -107,6 +103,47 @@ query example {
     status
   }
 }
+```
+
+### Custom Fields
+
+Any meta fields are available like so
+
+```graphql
+query example {
+  wp_post(ID: 9) {
+    title
+    foo: meta_key(:key "foo")
+    bar: meta_key(:key "bar")
+  }
+}
+```
+
+If you want to define your own resolver / type you can extend the field schema for a post type like so.
+
+```php
+// There is a get_{post_type}_schema call available for each post type
+add_filter('graphql-wp/get_post_schema', function($schema) {
+
+    $schema['fields'] = function() use ($schema) {
+               // Note call to "parent" function here
+        return $schema['fields']() + [
+            'foo' => [
+                'type' => Type::string(),
+                'resolve' => function($post) {
+                    return get_post_meta($post->ID, 'foo' ,true);
+                }
+            ],
+            'bar' => [
+                'type' => Type::string(),
+                'resolve' => function($post) {
+                    return get_post_meta($post->ID, 'bar' ,true);
+                }
+            ]
+        ];
+    };
+    return $schema;
+});
 ```
 
 ### Custom Post Types
@@ -149,47 +186,6 @@ add_filter('graphql-wp/schema-types', function($types){
     return array_merge($types, [
         Foo::getInstance()
     ]);
-});
-```
-
-### Custom Fields
-
-Any meta fields are available like so
-
-```graphql
-query example {
-  wp_post(ID: 9) {
-    title
-    foo: meta_key(:key "foo")
-    bar: meta_key(:key "bar")
-  }
-}
-```
-
-If you want to define your own resolver / type you can extend the field schema for a post type like so.
-
-```php
-// There is a get_{post_type}_schema call available for each post type
-add_filter('graphql-wp/get_post_schema', function($schema) {
-
-    $schema['fields'] = function() use ($schema) {
-               // Note call to "parent" function here
-        return $schema['fields']() + [
-            'foo' => [
-                'type' => Type::string(),
-                'resolve' => function($post) {
-                    return get_post_meta($post->ID, 'foo' ,true);
-                }
-            ],
-            'bar' => [
-                'type' => Type::string(),
-                'resolve' => function($post) {
-                    return get_post_meta($post->ID, 'bar' ,true);
-                }
-            ]
-        ];
-    };
-    return $schema;
 });
 ```
 
