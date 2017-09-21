@@ -102,12 +102,12 @@ class PostInput extends InputObjectType {
         'description' => 'Array of category names, slugs, or IDs. Defaults to value of the \'default_category\' option.',
       ],
       'tax_input' => [
-        'type' => new ListOfType(Type::string()),
-        'description' => 'Array of taxonomy terms keyed by their taxonomy name. Default empty.',
+        'type' => AssociativeArrayType::getInstance(),
+        'description' => 'Map of taxonomy terms keyed by their taxonomy name. Default empty.',
       ],
       'meta_input' => [
-        'type' => new ListOfType(Type::string()),
-        'description' => 'Array of post meta values keyed by their post meta key. Default empty.',
+        'type' => AssociativeArrayType::getInstance(),
+        'description' => 'Map of post meta values keyed by their post meta key. Default empty.',
       ]
     ];
   }
