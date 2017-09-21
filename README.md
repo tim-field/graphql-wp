@@ -154,7 +154,19 @@ add_filter('graphql-wp/schema-types', function($types){
 
 ### Custom Fields
 
-Extend the existing field function
+Any meta fields are available like so
+
+```graphql
+query example {
+  wp_post(ID: 9) {
+    title
+    foo: meta_key(:key "foo")
+    bar: meta_key(:key "bar")
+  }
+}
+```
+
+If you want to define your own resolver / type you can extend the field schema for a post type like so.
 
 ```php
 // There is a get_{post_type}_schema call available for each post type
