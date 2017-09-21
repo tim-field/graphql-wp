@@ -5,7 +5,7 @@ This is a WordPress Plugin that exposes a GraphQL endpoint at **/graphql**
 
 Uses this excellent [graphql-php](https://github.com/webonyx/graphql-php) library.  
 
-Supports Relay Connetions interface.
+Supports Relay Connections.
 
 ## Install
 `composer require mohiohio/graphql-wp`
