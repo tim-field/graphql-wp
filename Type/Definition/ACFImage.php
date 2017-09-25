@@ -66,7 +66,7 @@ class ACFImage extends ACFFile {
                             'type' => Type::string()
                         ],
                     ],
-                    'resolve' => function($post) {
+                    'resolve' => function($field) {
                         $args += [
                             'size' => 'medium'
                         ];
