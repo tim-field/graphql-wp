@@ -49,6 +49,13 @@ class WPTerm extends WPInterfaceType {
           return Relay::connectionFromArray($terms, $args);
         }
       ],
+      'childless' => [
+        'type' => Type::boolean(),
+        'description' => 'Does this term have children',
+        'resolve' => function($term) {
+          return !get_term_children($term->term_id, $term->taxonomy);
+        }
+      ],
       'image' => [
         'type' => Attachment::getInstance(),
         'args' => [
