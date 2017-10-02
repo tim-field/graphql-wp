@@ -50,7 +50,13 @@ class WPPost extends WPInterfaceType {
             'content' => [
                 'type' => Type::string(),
                 'description' => 'The full content of the post',
-                'resolve' => function($post) {
+                'args' => [
+                    'no_filter' => ['type' => Type::boolean()]
+                ],
+                'resolve' => function($post, $args) {
+                    if(!empty($args['no_filter'])) {
+                      return get_post_field('post_content', $post);
+                    }
                     return apply_filters('the_content', get_post_field('post_content', $post));
                 }
             ],
