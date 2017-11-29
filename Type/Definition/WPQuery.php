@@ -141,12 +141,20 @@ class WPQuery extends WPObjectType {
       $types = $args['post_type'] ?? ['post'];
       $status = $args['post_status'] ?? ['publish'];
 
-      $get_posts = new \WP_Query;
-      $posts = $get_posts->query($postArgs + $paging);
+      $queryArgs = $postArgs + $paging;
+
+      $res = apply_filters('graphql-wp/get_posts', ['posts' => null, 'total'=> 0] , $queryArgs);
+      $posts = $res['posts'];
+      $total = $res['total'];
+      if(!is_array($posts)) {
+        $get_posts = new \WP_Query;
+        $posts = $get_posts->query($queryArgs);
+        $total = $get_posts->found_posts;
+      }
 
       return Relay::connectionFromArraySlice($posts, $relayArgs, [
         'sliceStart' => $paging['offset'] ?? 0,
-        'arrayLength' => $get_posts->found_posts,
+        'arrayLength' => $total
       ]);
     }
 
@@ -200,6 +208,10 @@ class WPQuery extends WPObjectType {
         'tax_query' => [
           'type' => AssociativeArrayType::getInstance(),
           'description' => 'Use taxonomy parameters, see https://codex.wordpress.org/Class_Reference/WP_Query#Taxonomy_Parameters'
+        ],
+        'meta_query' => [
+          'type' => AssociativeArrayType::getInstance(),
+          'description' => 'Use taxonomy parameters, see https://codex.wordpress.org/Class_Reference/WP_Meta_Query'
         ]
       ];
     }
