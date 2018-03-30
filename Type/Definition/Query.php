@@ -30,7 +30,7 @@ class Query extends WPObjectType {
                 'args' => [
                     'id' => [
                         'type' => Type::string(),
-                        'desciption' => 'Term id'
+                        'description' => 'Term id'
                     ]
                 ],
                 'resolve' => function($root, $args) {
