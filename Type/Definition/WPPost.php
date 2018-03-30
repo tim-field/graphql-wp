@@ -114,6 +114,23 @@ class WPPost extends WPInterfaceType {
                     return $post->post_parent ? get_post($post->post_parent) : null;
                 }
             ],
+            'children' => [
+                'type' => new ListOfType(static::getInstance()),
+                'description' => 'retrieves attachments, revisions, or sub-pages, by post parent.',
+                'args' => [
+                    'number_posts' => ['type' => Type::int()],
+                    'post_type' => ['type' => Type::string()],
+                    'post_status' => ['type' => Type::string()],
+                    'post_mime_type' => ['type' => Type::string()],
+                ],
+                'resolve' => function($post, $args) {
+                    $args['post_parent'] = $post->ID;
+                    if(empty($args['post_status'])) {
+                        $args['post_status'] = 'any';
+                    }
+                    return get_children($args);
+                }
+            ],
             'modified' => [
                 'type' => Type::string(),
                 'description' => 'Format: 0000-00-00 00:00:00',
