@@ -58,6 +58,7 @@ Router::routes([
 
         if($requestString) {
             try {
+                do_action('graphql-wp/before-execute', $requestString);
                 // Define your schema:
                 $schema = Schema::build();
                 $result = GraphQL::execute(
@@ -68,6 +69,7 @@ Router::routes([
                     $variableValues,
                     $operationName
                 );
+                do_action('graphql-wp/after-execute', $result);
             } catch (\Exception $exception) {
                 $result = [
                     'errors' => [
