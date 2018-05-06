@@ -2,7 +2,7 @@
     "name": "mohiohio/graphql-wp",
     "description": "A GraphQL endpoint for WordPress",
     "type" : "wordpress-plugin",
-    "license": "GPL",
+    "license": "GPL-2.0-or-later",
     "authors": [
         {
             "name": "Tim Field",
