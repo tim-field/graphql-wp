@@ -7,6 +7,10 @@ Uses this excellent [graphql-php](https://github.com/webonyx/graphql-php) librar
 
 Supports Relay Connections.
 
+## Should I use this ? :thinking:
+
+You are likely to come across extra functionality that you will want to add to this, as long as you are comfortable with PHP that should be easy to do. I've been working less and less with WordPress and PHP of late so if you want to jump in and take over maintaing this library that would be ideal.  I think all the hard stuff is done :smile:
+
 ## Install
 `composer require mohiohio/graphql-wp`
 
