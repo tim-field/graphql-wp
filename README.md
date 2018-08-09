@@ -42,61 +42,49 @@ This is designed to follow WordPress' existing WP Query functions.  So as a rule
  ```graphql
 query example {
   wp_query {
-    posts(paged: 1, posts_per_page: 10) {
-      title
-      name
-      terms(taxonomy: "category") {
-        name
-        slug
+    posts(first: 10) {
+      edges {
+        node {
+          title
+          name
+          terms(taxonomy: "category") {
+            name
+            slug
+          }
+        }
       }
     }
   }
 }
-
 ```
 
 Will give you
 
-```json
-    {
-      "data": {
-        "wp_query": {
-          "posts": [
-           {
-              "title": "Much better than REST",
-              "name": "so-easy-yes",
-              "terms": [
-                  {
-	              "name": "Example Category ",
-	              "slug": "example-category"
-	          }
-              ]
-           }
-```
-Terms and menus and terms are also accessible 
-
-```graphql
-query example {
-  menu(name:"Main Menu") {
-    id
-    url
-  }
-}
-```
-
-Will give you
-```json
-    {
-      "data": {
-        "menu": [
+```json	   
+{
+  "data": {
+    "wp_query": {
+      "posts": {
+        "edges": [
           {
-            "title": "Home",
-            "url": "http://graphqlwordpress.dev/"
+            "node": {
+              "title": "Dashboard",
+              "name": "hello-world",
+              "terms": [
+                {
+                  "name": "Uncategorized",
+                  "slug": "uncategorized"
+                }
+              ]
+            }
           }
         ]
       }
     }
+  }
+}
 ```
+
 ### Post
 
 And of course you can get an individual post 
