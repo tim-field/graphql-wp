@@ -4,7 +4,7 @@
  * Plugin Name: WordPress GraphQL
  * Plugin URI: http://www.mohiohio.com/
  * Description: GraphQL for WordPress
- * Version: 0.3.0
+ * Version: 0.3.1
  * Author: Tim Field
  * Author URI: http://www.mohiohio.com/
  * License: GPL-3
@@ -14,6 +14,7 @@ namespace Mohiohio\GraphQLWP;
 
 use GraphQL\GraphQL;
 use Mohiohio\WordPress\Router;
+use ReallySimpleJWT\Token;
 
 const ENDPOINT = '/graphql/';
 
@@ -28,6 +29,11 @@ Router::routes([
 
         header('Access-Control-Allow-Origin: *');
         header('Access-Control-Allow-Headers: content-type');
+
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            return '';
+        }
+
         header('Content-Type: application/json');
 
         $contentTypeIsJson = (isset($_SERVER['HTTP_CONTENT_TYPE']) && $_SERVER['HTTP_CONTENT_TYPE'] == 'application/json')
@@ -63,7 +69,7 @@ Router::routes([
                 do_action('graphql-wp/before-execute', $requestString);
                 // Define your schema:
                 $schema = Schema::build();
-                $result = GraphQL::execute(
+                $result = GraphQL::executeQuery(
                     $schema,
                     $requestString,
                     /* $rootValue */
@@ -72,7 +78,7 @@ Router::routes([
                     null,
                     $variableValues,
                     $operationName
-                );
+                )->toArray();
                 do_action('graphql-wp/after-execute', $result);
             } catch (\Exception $exception) {
                 $result = [
@@ -94,9 +100,47 @@ Router::routes([
         } else {
             header("HTTP/1.1 401 Unauthorized");
         }
+    },
+
+    'debugit' => function () {
+        $secret = getenv('JWT_SECRET', true);
+        if ($_SERVER['HTTP_AUTHORIZATION'] && $secret) {
+            $token = explode(' ', $_SERVER['HTTP_AUTHORIZATION'])[1];
+
+            print_r($_SERVER);
+
+            // See https://github.com/RobDWaller/ReallySimpleJWT#error-messages-and-codes
+            if (Token::validate($token, $secret)) {
+                $result = Token::getPayload($token, $secret);
+                $user = new \WP_User($result['data']['ID']);
+                print_r($user);
+                return $user;
+            }
+        }
     }
 
 ]);
+
+add_filter('authenticate', function ($user) {
+    $secret = getenv('JWT_SECRET', true);
+    if (!empty($_SERVER['HTTP_AUTHORIZATION']) && $secret) {
+        $token = explode(' ', $_SERVER['HTTP_AUTHORIZATION'])[1];
+
+        // See https://github.com/RobDWaller/ReallySimpleJWT#error-messages-and-codes
+        if ($token && Token::validate($token, $secret)) {
+            $payload = Token::getPayload($token, $secret);
+            $user = new \WP_User($payload['data']['ID']);
+            return $user;
+        }
+    }
+}, 10, 3);
+
+add_action('after_setup_theme', function () {
+    $secret = getenv('JWT_SECRET', true);
+    if (!empty($_SERVER['HTTP_AUTHORIZATION']) && $secret) {
+        wp_signon(['user_login' => '', 'user_password' => '', 'remember' => true], false);
+    }
+});
 
 /**
  * Sends a json object to the client
