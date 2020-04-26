@@ -1,13 +1,15 @@
 <?php
+
 /**
-* Plugin Name: WordPress GraphQL
-* Plugin URI: http://www.mohiohio.com/
-* Description: GraphQL for WordPress
-* Version: 0.3.0
-* Author: Tim Field
-* Author URI: http://www.mohiohio.com/
-* License: GPL-3
-*/
+ * Plugin Name: WordPress GraphQL
+ * Plugin URI: http://www.mohiohio.com/
+ * Description: GraphQL for WordPress
+ * Version: 0.3.0
+ * Author: Tim Field
+ * Author URI: http://www.mohiohio.com/
+ * License: GPL-3
+ */
+
 namespace Mohiohio\GraphQLWP;
 
 use GraphQL\GraphQL;
@@ -15,14 +17,14 @@ use Mohiohio\WordPress\Router;
 
 const ENDPOINT = '/graphql/';
 
-if(file_exists(__DIR__.'/vendor')) {
+if (file_exists(__DIR__ . '/vendor')) {
     // echo 'autoloading vendor';
-    require __DIR__.'/vendor/autoload.php';
+    require __DIR__ . '/vendor/autoload.php';
 }
 
 Router::routes([
 
-    ENDPOINT => function() {
+    ENDPOINT => function () {
 
         header('Access-Control-Allow-Origin: *');
         header('Access-Control-Allow-Headers: content-type');
@@ -35,9 +37,9 @@ Router::routes([
             $rawBody = file_get_contents('php://input');
 
             try {
-              $data = json_decode($rawBody, true);
+                $data = json_decode($rawBody, true);
             } catch (\Exception $exception) {
-              jsonResponse(['errors' => ['message' => 'Decoding body failed. Be sure to send valid json request.']]);
+                jsonResponse(['errors' => ['message' => 'Decoding body failed. Be sure to send valid json request.']]);
             }
 
             // Decoded response is still empty
@@ -51,12 +53,12 @@ Router::routes([
         $requestString = isset($data['query']) ? $data['query'] : null;
         $operationName = isset($data['operation']) ? $data['operation'] : null;
         $variableValues = isset($data['variables']) ?
-            ( is_array($data['variables']) ?
+            (is_array($data['variables']) ?
                 $data['variables'] :
-                json_decode($data['variables'],true) ) :
+                json_decode($data['variables'], true)) :
             null;
 
-        if($requestString) {
+        if ($requestString) {
             try {
                 do_action('graphql-wp/before-execute', $requestString);
                 // Define your schema:
@@ -64,8 +66,10 @@ Router::routes([
                 $result = GraphQL::execute(
                     $schema,
                     $requestString,
-                    /* $rootValue */ null,
-                    /* $contextValue */ null,
+                    /* $rootValue */
+                    null,
+                    /* $contextValue */
+                    null,
                     $variableValues,
                     $operationName
                 );
@@ -81,7 +85,17 @@ Router::routes([
             jsonResponse($result);
         }
         jsonResponse(['errors' => ['message' => 'Wrong query format or empty query. Either send raw query _with_ Content-Type: \'application/json\' header or send query by posting www-form-data with a query="query{}..." parameter']]);
+    },
+
+    '/graphiql/' => function () {
+        // todo check login level
+        if (current_user_can('administrator')) {
+            include __DIR__ . '/graphiql.html';
+        } else {
+            header("HTTP/1.1 401 Unauthorized");
+        }
     }
+
 ]);
 
 /**
@@ -89,15 +103,16 @@ Router::routes([
  * @param  array  $resp response object
  * @return [type]       [description]
  */
-function jsonResponse(array $resp) {
-  try {
-    $jsonResponse = json_encode($resp);
-  } catch(\Exception $exception) {
-    jsonResponse(['errors' => ['message' => 'Failed to encode to JSON the response.']]);
-  }
+function jsonResponse(array $resp)
+{
+    try {
+        $jsonResponse = json_encode($resp);
+    } catch (\Exception $exception) {
+        jsonResponse(['errors' => ['message' => 'Failed to encode to JSON the response.']]);
+    }
 
-  echo $jsonResponse;
-  exit;
+    echo $jsonResponse;
+    exit;
 }
 
 /**
@@ -105,19 +120,19 @@ function jsonResponse(array $resp) {
  * @param  string $message The message to log to terminal
  * @return [type]          [description]
  */
-function log($message)  {
+function log($message)
+{
     if (!WP_DEBUG) {
-      return;
+        return;
     }
     $function_args = func_get_args();
     // The first is a simple string message, the others should be var_exported
     array_shift($function_args);
 
-    foreach($function_args as $argument) {
+    foreach ($function_args as $argument) {
         $message .= ' ' . var_export($argument, true);
     }
 
     // send to sapi
     error_log($message, 4);
-
 }
