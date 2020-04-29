@@ -1,20 +1,23 @@
 # graphql-wp
+
 A GraphQL endpoint for WordPress
 
 This is a WordPress Plugin that exposes a GraphQL endpoint at **/graphql**
 
-Uses this excellent [graphql-php](https://github.com/webonyx/graphql-php) library.  
+Uses this excellent [graphql-php](https://github.com/webonyx/graphql-php) library.
 
 Supports Relay Connections.
 
 ## Should I use this ? :thinking:
 
-You are likely to come across extra functionality that you will want to add to this, as long as you are comfortable with PHP that should be easy to do. I've been working less and less with WordPress and PHP of late so if you want to jump in and take over maintaing this library that would be ideal.  I think all the hard stuff is done :smile:
+You are likely to come across extra functionality that you will want to add to this, as long as you are comfortable with PHP that should be easy to do. I've been working less and less with WordPress and PHP of late so if you want to jump in and take over maintaing this library that would be ideal. I think all the hard stuff is done :smile:
 
 ## Install
+
 `composer require mohiohio/graphql-wp`
 
 Assuming you have something like this in your composer.json file ( so it knows to install it in your plugin directory )
+
 ```json
     "extra" : {
         "wordpress-install-dir": "public/wp",
@@ -27,19 +30,19 @@ Assuming you have something like this in your composer.json file ( so it knows t
 
 If your aren't familar with using composer with WordPress I'd recommend using a setup like [bedrock](https://roots.io/bedrock/). Otherwise you will at the least need to [require autoload.php](https://getcomposer.org/doc/01-basic-usage.md#autoloading) for this to work.
 
-
 ## Using
 
-The best way to explore / develop with this is by using a tool such as [ChromeiQL](https://chrome.google.com/webstore/detail/chromeiql/fkkiamalmpiidkljmicmjfbieiclmeij) That will show you the endpoints and arguments that are available.
+The best way to explore / develop with this is by visiting `/graphiql` after installation. This will show you the endpoints and arguments that are available.
 
-![https://raw.githubusercontent.com/balintsera/graphql-wp/fix/no-response/.readme.md/graphiql-query.png](https://raw.githubusercontent.com/balintsera/graphql-wp/fix/no-response/.readme.md/graphiql-query.png)
+![https://github.com/tim-field/graphql-wp/raw/master/.readme.md/graphiql.png](https://github.com/tim-field/graphql-wp/raw/master/.readme.md/graphiql.png)
 
 ### wp_query
-This is designed to follow WordPress' existing WP Query functions.  So as a rule you can pass the same parameters as your can to [WP Query](https://codex.wordpress.org/Class_Reference/WP_Query)*.
 
-**In reality there are a lot of params you can pass to WP_Query, and I've only implemented the ones that I've needed so far. But adding more is trivial as the arguments are just passed directly to the get_posts function, so its just a matter of defining them in the schema.*
+This is designed to follow WordPress' existing WP Query functions. So as a rule you can pass the same parameters as your can to [WP Query](https://codex.wordpress.org/Class_Reference/WP_Query)\*.
 
- ```graphql
+\*_In reality there are a lot of params you can pass to WP_Query, and I've only implemented the ones that I've needed so far. But adding more is trivial as the arguments are just passed directly to the get_posts function, so its just a matter of defining them in the schema._
+
+```graphql
 query example {
   wp_query {
     posts(first: 10) {
@@ -60,7 +63,7 @@ query example {
 
 Will give you
 
-```json	   
+```json
 {
   "data": {
     "wp_query": {
@@ -87,7 +90,7 @@ Will give you
 
 ### Post
 
-And of course you can get an individual post 
+And of course you can get an individual post
 
 ```graphql
 query example {

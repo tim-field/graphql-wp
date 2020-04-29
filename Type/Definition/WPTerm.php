@@ -1,4 +1,5 @@
 <?php
+
 namespace Mohiohio\GraphQLWP\Type\Definition;
 
 use Mohiohio\GraphQLWP\WPType;
@@ -7,25 +8,29 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\ListOfType;
 use GraphQLRelay\Relay;
 
-class WPTerm extends WPInterfaceType {
+class WPTerm extends WPInterfaceType
+{
 
   const TYPE = 'WP_Term';
   const DEFAULT_TYPE = 'category';
 
-  function resolveType($obj, $context, ResolveInfo $info) {
-    if($obj instanceOf \WP_Term){
-      return WPType::get(__NAMESPACE__.'\\'.ucfirst($obj->taxonomy)) ?? WPType::get(__NAMESPACE__.'\\'.ucfirst(self::DEFAULT_TYPE));
+  function resolveType($obj, $context, ResolveInfo $info)
+  {
+    if ($obj instanceof \WP_Term) {
+      return WPType::get(__NAMESPACE__ . '\\' . ucfirst($obj->taxonomy)) ?? WPType::get(__NAMESPACE__ . '\\' . ucfirst(self::DEFAULT_TYPE));
     }
   }
 
-  static function getDescription() {
+  static function getDescription()
+  {
     return 'Base class for taxonomies such as Category & Tag';
   }
 
-  static function getFieldSchema() {
+  static function getFieldSchema()
+  {
     static $schema;
     return $schema ?: $schema = [
-      'id' => Relay::globalIdField(self::TYPE, function($term) {
+      'id' => Relay::globalIdField(self::TYPE, function ($term) {
         return $term->term_id;
       }),
       'term_id' => ['type' => Type::int()],
@@ -41,9 +46,9 @@ class WPTerm extends WPInterfaceType {
         'type' => WPTerm::getConnectionInstance(),
         'description' => 'retrieves children of the term',
         'args' => Relay::connectionArgs(),
-        'resolve' => function($term, $args) {
-          $terms = array_map(function($id) use ($term) {
-            return get_term( $id, $term->taxonomy);
+        'resolve' => function ($term, $args) {
+          $terms = array_map(function ($id) use ($term) {
+            return get_term($id, $term->taxonomy);
           }, get_term_children($term->term_id, $term->taxonomy));
 
           return Relay::connectionFromArray($terms, $args);
@@ -52,7 +57,7 @@ class WPTerm extends WPInterfaceType {
       'childless' => [
         'type' => Type::boolean(),
         'description' => 'Does this term have children',
-        'resolve' => function($term) {
+        'resolve' => function ($term) {
           return !get_term_children($term->term_id, $term->taxonomy);
         }
       ],
@@ -61,10 +66,10 @@ class WPTerm extends WPInterfaceType {
         'args' => [
           'meta_key' => ['type' => Type::string()]
         ],
-        'resolve' => function($term, $args) {
+        'resolve' => function ($term, $args) {
           $args += ['meta_key' => 'thumbnail_id'];
           extract($args);
-          if($thumbnail_id = get_term_meta( $term->term_id, $meta_key, true )){
+          if ($thumbnail_id = get_term_meta($term->term_id, $meta_key, true)) {
             return get_post($thumbnail_id);
           }
         }
@@ -72,16 +77,17 @@ class WPTerm extends WPInterfaceType {
       'ancestors' => [
         'type' => new ListOfType(static::getInstance()),
         'description' => 'retrieves ancestors of the term',
-        'resolve' => function($term) {
-          return array_map(function($id) use ($term) {
-            return get_term( $id, $term->taxonomy);
+        'resolve' => function ($term) {
+          return array_map(function ($id) use ($term) {
+            return get_term($id, $term->taxonomy);
           }, get_ancestors($term->term_id, $term->taxonomy, 'taxonomy'));
         }
       ]
     ];
   }
 
-  static function getArgs() {
+  static function getArgs()
+  {
     return [
       'taxonomies' => [
         'description' => 'Array of Taxonomy names. Overides taxonomy argument',
@@ -162,14 +168,15 @@ class WPTerm extends WPInterfaceType {
     ] + Relay::connectionArgs();
   }
 
-  static function resolve($root, $args) {
+  static function resolve($root, $args)
+  {
     $relayKeys = array_keys(Relay::connectionArgs());
     $termArgs = array_diff_key($args, $relayKeys);
     $relayArgs = array_intersect_key($args, array_flip($relayKeys));
 
     $taxonomies = isset($termArgs['taxonomies'])
       ? $termArgs['taxonomies']
-      : isset($termArgs['taxonomy']) ? $termArgs['taxonomy'] : 'category';
+      : (isset($termArgs['taxonomy']) ? $termArgs['taxonomy'] : 'category');
 
     $terms = get_terms($taxonomies, $termArgs);
 
