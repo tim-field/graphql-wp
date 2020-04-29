@@ -100,25 +100,7 @@ Router::routes([
         } else {
             header("HTTP/1.1 401 Unauthorized");
         }
-    },
-
-    'debugit' => function () {
-        $secret = getenv('JWT_SECRET', true);
-        if ($_SERVER['HTTP_AUTHORIZATION'] && $secret) {
-            $token = explode(' ', $_SERVER['HTTP_AUTHORIZATION'])[1];
-
-            print_r($_SERVER);
-
-            // See https://github.com/RobDWaller/ReallySimpleJWT#error-messages-and-codes
-            if (Token::validate($token, $secret)) {
-                $result = Token::getPayload($token, $secret);
-                $user = new \WP_User($result['data']['ID']);
-                print_r($user);
-                return $user;
-            }
-        }
     }
-
 ]);
 
 add_filter('authenticate', function ($user) {
