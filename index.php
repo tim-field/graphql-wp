@@ -138,7 +138,10 @@ add_filter('authenticate', function ($user) {
 add_action('after_setup_theme', function () {
     $secret = getenv('JWT_SECRET', true);
     if (!empty($_SERVER['HTTP_AUTHORIZATION']) && $secret) {
-        wp_signon(['user_login' => '', 'user_password' => '', 'remember' => true], false);
+        $res = wp_signon([], false);
+        if ($res && !is_wp_error($res)) {
+            wp_set_current_user($res->ID);
+        }
     }
 });
 
@@ -157,26 +160,4 @@ function jsonResponse(array $resp)
 
     echo $jsonResponse;
     exit;
-}
-
-/**
- * Log a message to the SAPi (terminal) (only when WP_DEBUG is set to true)
- * @param  string $message The message to log to terminal
- * @return [type]          [description]
- */
-function log($message)
-{
-    if (!WP_DEBUG) {
-        return;
-    }
-    $function_args = func_get_args();
-    // The first is a simple string message, the others should be var_exported
-    array_shift($function_args);
-
-    foreach ($function_args as $argument) {
-        $message .= ' ' . var_export($argument, true);
-    }
-
-    // send to sapi
-    error_log($message, 4);
 }

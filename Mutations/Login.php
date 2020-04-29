@@ -2,8 +2,8 @@
 
 namespace Mohiohio\GraphQLWP\Mutations;
 
-use Exception;
 use GraphQL\Type\Definition\Type;
+use Mohiohio\GraphQLWP\Type\Definition\User;
 use ReallySimpleJWT\Token;
 
 
@@ -27,7 +27,36 @@ class Login extends MutationInterface
             'token' => [
                 'type' => Type::string(),
                 'resolve' => function ($payload) {
-                    return $payload['token'];
+                    $secret = getenv('JWT_SECRET', true);
+                    if (!$secret) {
+                        throw new \Exception('JWT_SECRET environment variable not set');
+                    }
+
+                    $user = $payload['user'];
+                    // https://github.com/RobDWaller/ReallySimpleJWT
+                    $token = $user ? Token::customPayload([
+                        'iat' => time(),
+                        'uid' => 1,
+                        'exp' => time() + 3600,
+                        'uid' => $user->ID,
+                        'data' => [
+                            'ID' => $user->ID,
+                            'caps' => $user->caps,
+                            'caps_key' => $user->caps_key,
+                            'roles' => $user->roles,
+                            // 'allcaps' => $res->allcaps,
+                            'first_name' => $user->first_name,
+                            'last_name' => $user->last_name
+                        ]
+                    ], $secret) : null;
+
+                    return $token;
+                }
+            ],
+            'user' => [
+                'type' => User::getInstance(),
+                'resolve' => function ($payload) {
+                    return $payload['user'];
                 }
             ]
         ];
@@ -35,32 +64,10 @@ class Login extends MutationInterface
 
     static function mutateAndGetPayload($input)
     {
-        $secret = getenv('JWT_SECRET', true);
-        if (!$secret) {
-            throw new Exception('JWT_SECRET environment variable not set');
-        }
-
         $res = wp_authenticate($input['username'], $input['password']);
         $is_error = is_wp_error($res);
-        // https://github.com/RobDWaller/ReallySimpleJWT
-        $token = $is_error ? null : Token::customPayload([
-            'iat' => time(),
-            'uid' => 1,
-            'exp' => time() + 3600,
-            'uid' => $res->ID,
-            'data' => [
-                'ID' => $res->ID,
-                'caps' => $res->caps,
-                'caps_key' => $res->caps_key,
-                'roles' => $res->roles,
-                // 'allcaps' => $res->allcaps,
-                'first_name' => $res->first_name,
-                'last_name' => $res->last_name
-            ]
-        ], $secret);
 
         return [
-            'token' => $token,
             'user' => $is_error ? null : $res,
             'error' => $is_error ? $res : null
         ];

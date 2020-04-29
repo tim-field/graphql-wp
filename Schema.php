@@ -18,6 +18,7 @@ use Mohiohio\GraphQLWP\Type\Definition\Product;
 use Mohiohio\GraphQLWP\Type\Definition\Order;
 use Mohiohio\GraphQLWP\Type\Definition\Category;
 use Mohiohio\GraphQLWP\Type\Definition\Tag;
+use Mohiohio\GraphQLWP\Type\Definition\User;
 use Mohiohio\GraphQLWP\Type\Definition\PostFormat;
 // use Mohiohio\GraphQLWP\Type\Definition\PostInput;
 use Mohiohio\GraphQLWP\Type\Definition\MenuItem;
@@ -57,7 +58,8 @@ class Schema
         Attachment::getInstance(),
         Category::getInstance(),
         Tag::getInstance(),
-        PostFormat::getInstance()
+        PostFormat::getInstance(),
+        User::getInstance()
       ]))
     ]);
   }
@@ -80,6 +82,8 @@ class Schema
             return get_post($idComponents['id']);
           case WPTerm::TYPE;
             return get_term($idComponents['id']);
+          case User::TYPE;
+            return get_user_by('id', $idComponents['id']);
             // case WPQuery::TYPE;
             // global $wp_query;
             // return $wp_query;
@@ -144,7 +148,7 @@ class Schema
               if (isset($args['ID'])) {
                 return get_post($args['ID']);
               }
-              return get_page_by_path($args['slug'], \OBJECT, isset($args['post_type']) ? $args['post_type'] : WPPost::DEFAULT_TYPE);
+              return get_page_by_path($args['slug'], 'OBJECT', isset($args['post_type']) ? $args['post_type'] : WPPost::DEFAULT_TYPE);
             }
           ],
           'term' => [
@@ -152,7 +156,7 @@ class Schema
             'args' => [
               'id' => [
                 'type' => Type::string(),
-                'desciption' => 'Term id'
+                'description' => 'Term id'
               ]
             ],
             'resolve' => function ($root, $args) {
@@ -191,6 +195,12 @@ class Schema
               return WPTerm::resolve($root, $args);
             }
           ],
+          'current_user'  => [
+            'type' => User::getInstance(),
+            'resolve' => function () {
+              return wp_get_current_user();
+            }
+          ],
           'query' => [
             'type' => static::getQuery(),
             'description' => 'Query node one level deep, makes working with Relay easier',
@@ -200,8 +210,7 @@ class Schema
           ],
           'node' => static::getNodeDefinition()['nodeField'],
         ];
-      },
-
+      }
     ]);
 
     return $schema;
