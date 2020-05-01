@@ -34,21 +34,7 @@ class Login extends MutationInterface
 
                     $user = $payload['user'];
                     // https://github.com/RobDWaller/ReallySimpleJWT
-                    $token = $user ? Token::customPayload([
-                        'iat' => time(),
-                        'uid' => 1,
-                        'exp' => time() + 3600,
-                        'uid' => $user->ID,
-                        'data' => [
-                            'ID' => $user->ID,
-                            'caps' => $user->caps,
-                            'caps_key' => $user->caps_key,
-                            'roles' => $user->roles,
-                            // 'allcaps' => $res->allcaps,
-                            'first_name' => $user->first_name,
-                            'last_name' => $user->last_name
-                        ]
-                    ], $secret) : null;
+                    $token = $user ? Token::create($user->ID, $secret, time() + 3600, getenv('WP_HOME')) : null;
 
                     return $token;
                 }
