@@ -15,7 +15,8 @@
     "webonyx/graphql-php": "^0.13",
     "ivome/graphql-relay-php": "^0.5",
     "danielstjules/stringy": "^2.3",
-    "rbdwllr/reallysimplejwt": "^3.0"
+    "rbdwllr/reallysimplejwt": "^3.0",
+    "ramsey/uuid": "^4.0"
   },
   "autoload": {
     "psr-4": {

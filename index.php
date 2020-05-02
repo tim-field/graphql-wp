@@ -15,11 +15,11 @@ namespace Mohiohio\GraphQLWP;
 use GraphQL\GraphQL;
 use Mohiohio\WordPress\Router;
 use ReallySimpleJWT\Token;
+use WP_Error;
 
 const ENDPOINT = '/graphql/';
 
 if (file_exists(__DIR__ . '/vendor')) {
-    // echo 'autoloading vendor';
     require __DIR__ . '/vendor/autoload.php';
 }
 
@@ -94,7 +94,6 @@ Router::routes([
     },
 
     '/graphiql/' => function () {
-        // todo check login level
         if (current_user_can('administrator')) {
             include __DIR__ . '/graphiql.html';
         } else {
@@ -106,21 +105,27 @@ Router::routes([
 add_filter('authenticate', function ($user) {
     $secret = getenv('JWT_SECRET', true);
     if (!empty($_SERVER['HTTP_AUTHORIZATION']) && $secret) {
+
         $token = explode(' ', $_SERVER['HTTP_AUTHORIZATION'])[1];
 
         // See https://github.com/RobDWaller/ReallySimpleJWT#error-messages-and-codes
         if ($token && Token::validate($token, $secret)) {
             $payload = Token::getPayload($token, $secret);
-            $user = new \WP_User($payload['data']['ID']);
+            $user = get_user_by('id', $payload['user_id']);
             return $user;
         }
+
+        return new WP_Error('authentication_failed', 'Graphql-WP: Invalid JWT token');
     }
+    return $user;
 }, 10, 3);
 
 add_action('after_setup_theme', function () {
     $secret = getenv('JWT_SECRET', true);
     if (!empty($_SERVER['HTTP_AUTHORIZATION']) && $secret) {
-        $res = wp_signon([], false);
+        // Don't auth with a cookie if Authorization header is set
+        unset($_COOKIE[LOGGED_IN_COOKIE]);
+        $res = wp_signon(['password' => $secret], false);
         if ($res && !is_wp_error($res)) {
             wp_set_current_user($res->ID);
         }
