@@ -19,10 +19,9 @@ class RefreshToken extends MutationInterface
     static function getOutputFields()
     {
         return [
-            'token' => Type::string(),
-            'resolve' => function ($payload) {
-                return $payload['token'];
-            }
+            'token' => [
+                'type' => Type::string(),
+            ]
         ];
     }
 

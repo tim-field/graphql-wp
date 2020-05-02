@@ -57,10 +57,7 @@ class Login extends MutationInterface
                 }
             ],
             'user' => [
-                'type' => User::getInstance(),
-                'resolve' => function ($payload) {
-                    return $payload['user'];
-                }
+                'type' => User::getInstance()
             ]
         ];
     }
