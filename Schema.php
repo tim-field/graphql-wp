@@ -199,7 +199,10 @@ class Schema
           'current_user'  => [
             'type' => User::getInstance(),
             'resolve' => function () {
-              return wp_get_current_user();
+              $user = wp_get_current_user();
+              if ($user->ID) {
+                return $user;
+              }
             }
           ],
           'query' => [
