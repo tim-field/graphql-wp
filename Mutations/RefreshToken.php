@@ -49,8 +49,6 @@ class RefreshToken extends MutationInterface
                     ];
                 }
             }
-        } else {
-            error_log('invalid token ?');
         }
     }
 }
