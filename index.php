@@ -4,7 +4,7 @@
  * Plugin Name: WordPress GraphQL
  * Plugin URI: http://www.mohiohio.com/
  * Description: GraphQL for WordPress
- * Version: 0.3.1
+ * Version: 0.6.0
  * Author: Tim Field
  * Author URI: http://www.mohiohio.com/
  * License: GPL-3
