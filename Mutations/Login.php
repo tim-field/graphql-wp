@@ -64,7 +64,7 @@ class Login extends MutationInterface
 
     static function get_token_expire_time()
     {
-        return apply_filters('graphql-wp-token-expire-seconds', 3600);
+        return apply_filters('graphql-wp-token-expire-seconds', HOUR_IN_SECONDS);
     }
 
     static function mutateAndGetPayload($input)
