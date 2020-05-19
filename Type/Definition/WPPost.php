@@ -17,7 +17,8 @@ class WPPost extends WPInterfaceType
     function resolveType($obj, $context, ResolveInfo $info)
     {
         if ($obj instanceof \WP_Post) {
-            return WPType::get(__NAMESPACE__ . '\\' . ucfirst($obj->post_type)) ?? WPType::get(__NAMESPACE__ . '\\' . ucfirst(self::DEFAULT_TYPE));
+            $class_name = apply_filters('graphql-wp/resolve_post_type', __NAMESPACE__ . '\\' . ucfirst($obj->post_type), $obj);
+            return WPType::get($class_name) ?? WPType::get(__NAMESPACE__ . '\\' . ucfirst(self::DEFAULT_TYPE));
         }
     }
 
@@ -34,7 +35,7 @@ class WPPost extends WPInterfaceType
                 return $post->ID;
             }),
             'ID' => [
-                'type' => Type::nonNull(Type::string()),
+                'type' => Type::nonNull(Type::int()),
                 'description' => 'The ID of the post',
             ],
             'author' => [
@@ -45,7 +46,7 @@ class WPPost extends WPInterfaceType
                 }
             ],
             'name' => [
-                'type' => Type::string(),
+                'type' => Type::nonNull(Type::string()),
                 'description' => 'The post\'s slug',
                 'resolve' => function ($post) {
                     return $post->post_name;
@@ -55,7 +56,7 @@ class WPPost extends WPInterfaceType
                 'type' => Type::string(),
                 'description' => 'The title of the post',
                 'resolve' => function ($post) {
-                    return get_the_title($post);
+                    return html_entity_decode(get_the_title($post), ENT_HTML5);
                 }
             ],
             'content' => [

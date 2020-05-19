@@ -17,7 +17,8 @@ class WPTerm extends WPInterfaceType
   function resolveType($obj, $context, ResolveInfo $info)
   {
     if ($obj instanceof \WP_Term) {
-      return WPType::get(__NAMESPACE__ . '\\' . ucfirst($obj->taxonomy)) ?? WPType::get(__NAMESPACE__ . '\\' . ucfirst(self::DEFAULT_TYPE));
+      $class_name = apply_filters('graphql-wp/resolve_term_type', __NAMESPACE__ . '\\' . ucfirst($obj->taxonomy), $obj);
+      return WPType::get($class_name) ?? WPType::get(__NAMESPACE__ . '\\' . ucfirst(self::DEFAULT_TYPE));
     }
   }
 

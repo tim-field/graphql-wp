@@ -92,13 +92,13 @@ class Schema
             return null;
         }
       },
-      function ($obj) {
+      function ($obj, $context, $info) {
 
         if ($obj instanceof \WP_Post) {
-          return WPPost::resolveType($obj);
+          return WPPost::resolveType($obj, $context, $info);
         }
         if ($obj instanceof \WP_Term) {
-          return WPTerm::resolveType($obj);
+          return WPTerm::resolveType($obj, $context, $info);
         }
       }
     );

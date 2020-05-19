@@ -5,49 +5,59 @@ namespace Mohiohio\GraphQLWP\Type\Definition;
 use Mohiohio\GraphQLWP\WPType;
 use function Stringy\create as s;
 
-trait WPSchema {
+trait WPSchema
+{
 
-    function __construct($config=[]) {
+    function __construct($config = [])
+    {
         parent::__construct(static::getSchema($config));
     }
 
     abstract static function getFieldSchema();
 
-    static function getInstance($config=[]) {
+    static function getInstance($config = [])
+    {
         return WPType::get(get_called_class());
     }
 
-    static function getName() {
+    static function getName()
+    {
         return (new \ReflectionClass(get_called_class()))->getShortName();
     }
 
-    static function getEdgeInstance() {
+    static function getEdgeInstance()
+    {
         return WPType::getEdge(get_called_class(), static::getInstance());
     }
 
-    static function getConnectionInstance() {
+    static function getConnectionInstance()
+    {
         return WPType::getConnection(get_called_class(), static::getInstance());
     }
 
-    static function getSchema($config=[]) {
+    static function getSchema($config = [])
+    {
         return static::getWPSchema($config);
     }
 
-    static function getWPSchema($config=[]) {
-        return apply_filters('graphql-wp/get_'.static::getType().'_schema', array_replace_recursive([
+    static function getWPSchema($config = [])
+    {
+        return apply_filters('graphql-wp/get_' . static::getType() . '_schema', array_replace_recursive([
             'name' => static::getName(),
             'description' => static::getDescription(),
-            'fields' => function() {
+            'fields' => function () {
                 return static::getFieldSchema();
             }
-        ],$config));
+        ], $config));
     }
 
-    static function getDescription() {
+    static function getDescription()
+    {
         return null;
     }
 
-    static function getType() {
-        return (string) str_replace('w_p_','wp_', s(static::getName())->underscored());
+    static function getType()
+    {
+        return (string) str_replace('w_p_', 'wp_', s(static::getName())->underscored());
     }
 }
