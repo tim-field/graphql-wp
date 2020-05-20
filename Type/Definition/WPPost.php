@@ -74,21 +74,9 @@ class WPPost extends WPInterfaceType
             ],
             'excerpt' => [
                 'type' => Type::string(),
-                'description' => 'User-defined post excerpt',
-                'args' => [
-                    'always' => [
-                        'type' => Type::boolean(),
-                        'desciption' => 'If true will create an excerpt from post content'
-                    ]
-                ],
+                'description' => 'post excerpt',
                 'resolve' => function ($post, $args) {
-
-                    $excerpt = apply_filters('the_excerpt', get_post_field('post_excerpt', $post));
-
-                    if (empty($excerpt) && !empty($args['always'])) {
-                        $excerpt = apply_filters('the_excerpt', wp_trim_words(strip_shortcodes($post->post_content)));
-                    }
-
+                    $excerpt = apply_filters('the_excerpt', get_the_excerpt($post));
                     return $excerpt;
                 }
             ],
