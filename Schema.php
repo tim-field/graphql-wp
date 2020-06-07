@@ -131,22 +131,43 @@ class Schema
             'args' => [
               'ID' => [
                 'name' => 'ID',
-                'description' => 'id of the post',
+                'description' => 'ID of the post',
                 'type' => Type::int()
               ],
               'slug' => [
                 'name' => 'slug',
-                'description' => 'name of the post',
+                'description' => 'Name of the post',
                 'type' => Type::string()
               ],
               'post_type' => [
                 'name' => 'post_type',
-                'description' => 'type of the post',
+                'description' => 'Type of the post',
                 'type' => Type::string()
+              ],
+              'preview' => [
+                'name' => 'preview',
+                'description' => 'Pass true to show preview post, only available in conjunction with ID param',
+                'type' => Type::boolean()
               ]
             ],
             'resolve' =>  function ($root, $args) {
               if (isset($args['ID'])) {
+                if (isset($args['preview']) && $args['preview']) {
+                  $get_posts = new \WP_Query;
+                  // Ref https://stackoverflow.com/questions/21544161/wordpress-query-for-preview
+                  $queryArgs = [
+                    'post_status' => 'any',
+                    'post_parent' => $args['ID'],
+                    'post_type' => 'revision',
+                    'sort_column' => 'ID',
+                    'sort_order' => 'desc',
+                    'posts_per_page' => 1
+                  ];
+                  $posts = $get_posts->query($queryArgs);
+                  if (!empty($posts)) {
+                    return $posts[0];
+                  }
+                }
                 return get_post($args['ID']);
               }
               return get_page_by_path($args['slug'], 'OBJECT', isset($args['post_type']) ? $args['post_type'] : WPPost::DEFAULT_TYPE);

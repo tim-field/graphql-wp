@@ -215,6 +215,10 @@ class WPQuery extends WPObjectType
       'post__in' => [
         'description' => 'Array of posts to retrieve by id',
         'type' => new ListOfType(Type::int())
+      ],
+      'post_parent' => [
+        'description' => "Use page id to return only child pages. Set to 0 to return only top-level entries. ",
+        'type' => Type::int()
       ]
     ];
   }
