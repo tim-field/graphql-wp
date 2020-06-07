@@ -17,7 +17,12 @@ class WPPost extends WPInterfaceType
     function resolveType($obj, $context, ResolveInfo $info)
     {
         if ($obj instanceof \WP_Post) {
-            $class_name = apply_filters('graphql-wp/resolve_post_type', __NAMESPACE__ . '\\' . ucfirst($obj->post_type), $obj);
+            $post_type = $obj->post_type;
+            if ($post_type === 'revision') {
+                $parent = get_post($obj->post_parent);
+                $post_type = $parent->post_type;
+            }
+            $class_name = apply_filters('graphql-wp/resolve_post_type', __NAMESPACE__ . '\\' . ucfirst($post_type), $post_type, $obj);
             return WPType::get($class_name) ?? WPType::get(__NAMESPACE__ . '\\' . ucfirst(self::DEFAULT_TYPE));
         }
     }
