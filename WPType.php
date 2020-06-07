@@ -18,7 +18,7 @@ class WPType
   static function getEdge($className, $nodeType)
   {
     return self::$types[$className . 'Edge'] ??
-      (self::$types[$className . 'Edge'] = Relay::edgeType(['nodeType' => $nodeType, 'name' => $nodeType->name]));
+      (self::$types[$className . 'Edge'] = Relay::edgeType(['nodeType' => Type::nonNull($nodeType), 'name' => $nodeType->name]));
   }
 
   static function getConnection($className, $nodeType)
