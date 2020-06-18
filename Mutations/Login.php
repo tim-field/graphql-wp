@@ -4,6 +4,7 @@ namespace Mohiohio\GraphQLWP\Mutations;
 
 use GraphQL\Type\Definition\Type;
 use Mohiohio\GraphQLWP\Type\Definition\User;
+use Mohiohio\GraphQLWP\Type\Definition\WPError;
 use ReallySimpleJWT\Token;
 use Ramsey\Uuid\Uuid;
 
@@ -16,11 +17,11 @@ class Login extends MutationInterface
     {
         return [
             'username' => [
-                'type' => Type::string()
+                'type' => Type::nonNull(Type::string())
             ],
             'password' => [
-                'type' => Type::string()
-            ]
+                'type' => Type::nonNull(Type::string())
+            ],
         ];
     }
 
@@ -30,34 +31,22 @@ class Login extends MutationInterface
             'token' => [
                 'type' => Type::string(),
                 'resolve' => function ($payload) {
-                    $secret = getenv('JWT_SECRET', true);
-
                     $user = $payload['user'];
-                    // https://github.com/RobDWaller/ReallySimpleJWT
-                    $token = $user ? Token::create($user->ID, $secret, time() + static::get_token_expire_time(), getenv('WP_HOME')) : null;
-
-                    return $token;
+                    return static::get_token($user);
                 }
             ],
             'refresh_token' => [
                 'type' => Type::string(),
                 'resolve' => function ($payload) {
-                    $secret = getenv('JWT_SECRET', true);
                     $user = $payload['user'];
-
-                    $key = get_user_meta($user->ID, self::REFRESH_TOKEN_META_KEY, true);
-                    if (!$key) {
-                        $key = Uuid::uuid4()->toString();
-                        update_user_meta($user->ID, self::REFRESH_TOKEN_META_KEY, $key);
-                    }
-                    // https://github.com/RobDWaller/ReallySimpleJWT
-                    $token = $user ? Token::create($key, $secret, time() + DAY_IN_SECONDS * 365, getenv('WP_HOME')) : null;
-
-                    return $token;
+                    return static::get_refresh_token($user);
                 }
             ],
             'user' => [
                 'type' => User::getInstance()
+            ],
+            'error' => [
+                'type' => WPError::getInstance()
             ]
         ];
     }
@@ -65,6 +54,36 @@ class Login extends MutationInterface
     static function get_token_expire_time()
     {
         return apply_filters('graphql-wp-token-expire-seconds', HOUR_IN_SECONDS);
+    }
+
+    static function get_token($user)
+    {
+        $secret = getenv('JWT_SECRET', true);
+        error_log($secret);
+        if ($secret && $user && $user->ID) {
+            // https://github.com/RobDWaller/ReallySimpleJWT
+            $token = Token::create($user->ID, $secret, time() + static::get_token_expire_time(), getenv('WP_HOME'));
+
+            return $token;
+        }
+        return null;
+    }
+
+    static function get_refresh_token($user)
+    {
+        $secret = getenv('JWT_SECRET', true);
+        if ($secret && $user && $user->ID) {
+            $key = get_user_meta($user->ID, self::REFRESH_TOKEN_META_KEY, true);
+            if (!$key) {
+                $key = Uuid::uuid4()->toString();
+                update_user_meta($user->ID, self::REFRESH_TOKEN_META_KEY, $key);
+            }
+            // https://github.com/RobDWaller/ReallySimpleJWT
+            $token = Token::create($key, $secret, time() + DAY_IN_SECONDS * 365, getenv('WP_HOME'));
+
+            return $token;
+        }
+        return null;
     }
 
     static function mutateAndGetPayload($input)

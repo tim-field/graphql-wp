@@ -28,6 +28,7 @@ use Mohiohio\GraphQLWP\Mutations\Post as PostMutation;
 use Mohiohio\GraphQLWP\Mutations\Term as TermMutation;
 use Mohiohio\GraphQLWP\Mutations\Login;
 use Mohiohio\GraphQLWP\Mutations\RefreshToken;
+use Mohiohio\GraphQLWP\Type\Definition\CurrentUser;
 
 class Schema
 {
@@ -218,7 +219,7 @@ class Schema
             }
           ],
           'current_user'  => [
-            'type' => User::getInstance(),
+            'type' => CurrentUser::getInstance(),
             'resolve' => function () {
               $user = wp_get_current_user();
               if ($user->ID) {
