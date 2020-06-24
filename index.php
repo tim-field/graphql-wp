@@ -4,7 +4,7 @@
  * Plugin Name: WordPress GraphQL
  * Plugin URI: http://www.mohiohio.com/
  * Description: GraphQL for WordPress
- * Version: 0.6.0
+ * Version: 0.8.2
  * Author: Tim Field
  * Author URI: http://www.mohiohio.com/
  * License: GPL-3
@@ -123,8 +123,8 @@ add_filter('authenticate', function ($user) {
 add_action('after_setup_theme', function () {
     $secret = getenv('JWT_SECRET', true);
     if (!empty($_SERVER['HTTP_AUTHORIZATION']) && $secret) {
-        // Don't auth with a cookie if Authorization header is set
-        unset($_COOKIE[LOGGED_IN_COOKIE]);
+        // Don't auth with a cookie if Authorization header is set ?
+        // unset($_COOKIE[LOGGED_IN_COOKIE]);
         $res = wp_signon(['password' => $secret], false);
         if ($res && !is_wp_error($res)) {
             wp_set_current_user($res->ID);

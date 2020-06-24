@@ -27,6 +27,7 @@ use Mohiohio\GraphQLWP\Type\Definition\BlogInfo;
 use Mohiohio\GraphQLWP\Mutations\Post as PostMutation;
 use Mohiohio\GraphQLWP\Mutations\Term as TermMutation;
 use Mohiohio\GraphQLWP\Mutations\Login;
+use Mohiohio\GraphQLWP\Mutations\Register;
 use Mohiohio\GraphQLWP\Mutations\RefreshToken;
 use Mohiohio\GraphQLWP\Type\Definition\CurrentUser;
 
@@ -256,6 +257,7 @@ class Schema
           'save_post' => PostMutation::init(),
           'save_term' => TermMutation::init(),
           'login' => Login::init(),
+          'register' => Register::init(),
           'refresh_token' => RefreshToken::init()
         ];
       }

@@ -59,7 +59,6 @@ class Login extends MutationInterface
     static function get_token($user)
     {
         $secret = getenv('JWT_SECRET', true);
-        error_log($secret);
         if ($secret && $user && $user->ID) {
             // https://github.com/RobDWaller/ReallySimpleJWT
             $token = Token::create($user->ID, $secret, time() + static::get_token_expire_time(), getenv('WP_HOME'));
