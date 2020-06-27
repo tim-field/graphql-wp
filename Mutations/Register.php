@@ -66,7 +66,6 @@ class Register extends MutationInterface
         $is_error = is_wp_error($res);
         if (!$is_error) {
             $res = wp_authenticate($userdata['user_email'], $userdata['user_pass']);
-            error_log(print_r($res, true));
         }
 
         return [
