@@ -21,10 +21,6 @@ class PostInput extends InputObjectType {
         'type' => Type::int(),
         'description' => 'The ID of the user who added the post. Default is the current user ID'
       ],
-      'post_title' => [
-        'type' => Type::string(),
-        'description' => 'The ID of the user who added the post. Default is the current user ID'
-      ],
       'post_content' => [
         'type' => Type::string(),
         'description' => 'The post content. Default empty.'
