@@ -10,6 +10,6 @@ class InsertPostPayload extends WPObjectType {
       'post' => [
         'type' => WPPost::getInstance(),
       ]
-    ]
+    ];
   }
 }
