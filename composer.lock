@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1051d73df4c8750094c6e6dfb1d98a99",
+    "content-hash": "ff84b36b714c2348ff63929064b4f8ce",
     "packages": [
         {
             "name": "brick/math",
@@ -348,16 +348,16 @@
         },
         {
             "name": "rbdwllr/reallysimplejwt",
-            "version": "3.0.2",
+            "version": "3.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/RobDWaller/ReallySimpleJWT.git",
-                "reference": "a85514e5873e9dd63c40227bfdfbe174a7dbb845"
+                "reference": "3e849792e591fcea5bd77401ff8dce0f31e16c9a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/RobDWaller/ReallySimpleJWT/zipball/a85514e5873e9dd63c40227bfdfbe174a7dbb845",
-                "reference": "a85514e5873e9dd63c40227bfdfbe174a7dbb845",
+                "url": "https://api.github.com/repos/RobDWaller/ReallySimpleJWT/zipball/3e849792e591fcea5bd77401ff8dce0f31e16c9a",
+                "reference": "3e849792e591fcea5bd77401ff8dce0f31e16c9a",
                 "shasum": ""
             },
             "require": {
@@ -366,19 +366,16 @@
             "require-dev": {
                 "infection/infection": "^0.14",
                 "phpbench/phpbench": "^0.16",
-                "phploc/phploc": "^5.0",
                 "phpmd/phpmd": "^2.7",
                 "phpstan/phpstan": "^0.11",
                 "phpunit/phpunit": "^8.0",
-                "sebastian/phpcpd": "^4.1",
+                "roave/backward-compatibility-check": "^3.0",
                 "squizlabs/php_codesniffer": "^3.0"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "ReallySimpleJWT\\": "src",
-                    "Tests\\": "tests",
-                    "Benchmarks\\": "benchmarks"
+                    "ReallySimpleJWT\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -400,7 +397,7 @@
                 "php",
                 "tokens"
             ],
-            "time": "2020-04-01T15:12:32+00:00"
+            "time": "2021-04-06T16:13:14+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
