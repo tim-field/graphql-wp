@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1051d73df4c8750094c6e6dfb1d98a99",
+    "content-hash": "7b0e23f4768eb0024bf377453e512a0e",
     "packages": [
         {
             "name": "brick/math",
@@ -549,16 +549,16 @@
         },
         {
             "name": "webonyx/graphql-php",
-            "version": "v0.13.8",
+            "version": "v14.6.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webonyx/graphql-php.git",
-                "reference": "6829ae58f4c59121df1f86915fb9917a2ec595e8"
+                "reference": "34aa6dd54cd2ebdf8f36cafe817323333f7eb6ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webonyx/graphql-php/zipball/6829ae58f4c59121df1f86915fb9917a2ec595e8",
-                "reference": "6829ae58f4c59121df1f86915fb9917a2ec595e8",
+                "url": "https://api.github.com/repos/webonyx/graphql-php/zipball/34aa6dd54cd2ebdf8f36cafe817323333f7eb6ba",
+                "reference": "34aa6dd54cd2ebdf8f36cafe817323333f7eb6ba",
                 "shasum": ""
             },
             "require": {
@@ -567,15 +567,19 @@
                 "php": "^7.1||^8.0"
             },
             "require-dev": {
+                "amphp/amp": "^2.3",
                 "doctrine/coding-standard": "^6.0",
-                "phpbench/phpbench": "^0.14.0",
-                "phpstan/phpstan": "^0.11.4",
-                "phpstan/phpstan-phpunit": "^0.11.0",
-                "phpstan/phpstan-strict-rules": "^0.11.0",
-                "phpunit/phpcov": "^5.0",
-                "phpunit/phpunit": "^7.2",
+                "nyholm/psr7": "^1.2",
+                "phpbench/phpbench": "^0.16.10",
+                "phpstan/extension-installer": "^1.0",
+                "phpstan/phpstan": "0.12.82",
+                "phpstan/phpstan-phpunit": "0.12.18",
+                "phpstan/phpstan-strict-rules": "0.12.9",
+                "phpunit/phpunit": "^7.2|^8.5",
                 "psr/http-message": "^1.0",
-                "react/promise": "2.*"
+                "react/promise": "2.*",
+                "simpod/php-coveralls-mirror": "^3.0",
+                "squizlabs/php_codesniffer": "3.5.4"
             },
             "suggest": {
                 "psr/http-message": "To use standard GraphQL server",
@@ -597,7 +601,13 @@
                 "api",
                 "graphql"
             ],
-            "time": "2019-08-25T10:32:47+00:00"
+            "funding": [
+                {
+                    "url": "https://opencollective.com/webonyx-graphql-php",
+                    "type": "open_collective"
+                }
+            ],
+            "time": "2021-05-11T12:37:43+00:00"
         }
     ],
     "packages-dev": [
